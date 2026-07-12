@@ -27,7 +27,7 @@ jobs:
       - run: pnpm validate:manifest
       - run: pnpm audit --audit-level high
         continue-on-error: true
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: readslot-development-build
           path: dist/
