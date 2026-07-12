@@ -23,9 +23,9 @@ jobs:
       - run: pnpm check
       - run: pnpm package
         env:
-          LYDRA_GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.LYDRA_GOOGLE_OAUTH_CLIENT_ID }}
+          READSLOT_GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.READSLOT_GOOGLE_OAUTH_CLIENT_ID }}
       - uses: actions/upload-artifact@v6
         with:
-          name: lydra-release-candidate
+          name: readslot-release-candidate
           path: release/
           if-no-files-found: error

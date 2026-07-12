@@ -5,10 +5,10 @@ import { resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
 const pkg = JSON.parse(await readFile(resolve(root, "package.json"), "utf8"));
-const releaseDir = process.env.LYDRA_RELEASE_DIR
-  ? resolve(process.env.LYDRA_RELEASE_DIR)
+const releaseDir = process.env.READSLOT_RELEASE_DIR
+  ? resolve(process.env.READSLOT_RELEASE_DIR)
   : resolve(root, "release");
-const archive = resolve(releaseDir, `lydra-${pkg.version}.zip`);
+const archive = resolve(releaseDir, `readslot-${pkg.version}.zip`);
 await mkdir(releaseDir, { recursive: true });
 
 const listFiles = async (directory, prefix = "") => {
@@ -46,7 +46,7 @@ if (result.status !== 0) throw new Error("Failed to create release archive.");
 const digest = createHash("sha256")
   .update(await readFile(archive))
   .digest("hex");
-await writeFile(`${archive}.sha256`, `${digest}  lydra-${pkg.version}.zip\n`);
+await writeFile(`${archive}.sha256`, `${digest}  readslot-${pkg.version}.zip\n`);
 const archiveSize = (await stat(archive)).size;
 if (archiveSize > 5 * 1024 * 1024)
   throw new Error("Release archive exceeds the preferred 5 MB budget.");

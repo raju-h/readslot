@@ -1,20 +1,20 @@
 # Google OAuth Setup
 
-Lydra uses a public OAuth client of type **Chrome Extension**. It never uses a client secret.
+ReadSlot uses a public OAuth client of type **Chrome Extension**. It never uses a client secret.
 
 1. Create a Google Cloud project and enable Google Calendar API.
 2. Configure the OAuth consent screen and development test users.
 3. Load the development build and copy its Chrome extension ID.
 4. Create a Chrome Extension OAuth client associated with that ID.
-5. Build with `LYDRA_GOOGLE_OAUTH_CLIENT_ID=…apps.googleusercontent.com`.
+5. Build with `READSLOT_GOOGLE_OAUTH_CLIENT_ID=…apps.googleusercontent.com`.
 6. Reload `dist/` and use Settings → Connect Google.
 
 Requested scopes:
 
 - `calendar.calendarlist.readonly`: list calendars and their access roles.
 - `calendar.events.freebusy`: read availability without event details.
-- `calendar.events`: create, reconcile, update, and detect removal of confirmed Lydra events.
+- `calendar.events`: create, reconcile, update, and detect removal of confirmed ReadSlot events.
 
-Chrome Identity manages access-token caching. Lydra never writes tokens to IndexedDB or
+Chrome Identity manages access-token caching. ReadSlot never writes tokens to IndexedDB or
 browser settings. Production requires a separate OAuth client associated with the Chrome Web
 Store extension ID.

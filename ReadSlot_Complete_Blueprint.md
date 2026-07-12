@@ -1,4 +1,4 @@
-# Lydra — Complete Product, Engineering, Delivery, and Open-Source Blueprint
+# ReadSlot — Complete Product, Engineering, Delivery, and Open-Source Blueprint
 
 **Document status:** Implemented beta baseline; OAuth verification pending  
 **Version:** 2.1  
@@ -63,15 +63,17 @@ Recommended approach:
 
 ## 1.1 Product name
 
-Product name: **Lydra**
+Product name: **ReadSlot**
 
-Lydra is the canonical product, extension, and repository name. Before publication, the name must still be checked for Chrome Web Store conflicts, GitHub name availability, and trademark risk.
+Tagline: **Schedule what you save.**
+
+ReadSlot is the canonical product, extension, and repository name. It replaced the former working name on 2026-07-13 after a preliminary collision review. Before publication, it must still receive formal Chrome Web Store, GitHub, domain, and trademark clearance.
 
 ## 1.2 Vision
 
 People do not need another place to store links. They need help creating realistic time to consume what they save.
 
-Lydra transforms a passive reading backlog into intentional calendar sessions while preserving human control.
+ReadSlot transforms a passive reading backlog into intentional calendar sessions while preserving human control.
 
 ## 1.3 Mission
 
@@ -275,7 +277,7 @@ Needs:
 
 ## 5.1 Category
 
-Lydra sits between:
+ReadSlot sits between:
 - Read-later tools
 - Calendar time-blocking tools
 - Personal productivity tools
@@ -285,7 +287,7 @@ It should not position itself as a complete reader or note-taking platform.
 
 ## 5.2 Positioning statement
 
-> Lydra is a local-first scheduling assistant for saved content. It turns articles and videos into suggested calendar time while keeping the final decision with the user.
+> ReadSlot is a local-first scheduling assistant for saved content. It turns articles and videos into suggested calendar time while keeping the final decision with the user.
 
 ## 5.3 Differentiation
 
@@ -300,7 +302,7 @@ Calendar tools:
 - Show availability
 - Remind users
 
-Lydra:
+ReadSlot:
 - Connects saved content with available time
 - Estimates backlog effort
 - Suggests multiple blocks
@@ -670,7 +672,7 @@ Before creation:
 
 ## Default title
 
-`Lydra — 3 items`
+`ReadSlot — 3 items`
 
 Optional:
 `Reading: AI safety and system design`
@@ -692,7 +694,7 @@ Example:
 2. Video title — 22 min  
    https://youtube.com/...
 
-Created by Lydra.
+Created by ReadSlot.
 
 ## Reminders
 
@@ -1011,7 +1013,7 @@ Duplicate outcomes:
 
 ## Scenario 8: event changed externally
 
-1. User moves a Lydra reading block in Google Calendar.
+1. User moves a ReadSlot reading block in Google Calendar.
 2. Extension later queries the event.
 3. Local session updates to the new time.
 4. User is not forced back to the original time.
@@ -1286,7 +1288,7 @@ Responsibilities:
 # 12. Proposed Repository Structure
 
 ```text
-lydra/
+readslot/
 ├── .github/
 │   ├── ISSUE_TEMPLATE/
 │   │   ├── bug.yml
@@ -1936,7 +1938,7 @@ labels: ["type:bug", "status:needs-triage"]
 body:
   - type: markdown
     attributes:
-      value: Thanks for helping improve Lydra.
+      value: Thanks for helping improve ReadSlot.
   - type: textarea
     id: summary
     attributes:
@@ -2552,7 +2554,7 @@ Prepare:
 
 Suggested:
 
-> Lydra saves web content and helps users schedule confirmed reading sessions in Google Calendar.
+> ReadSlot saves web content and helps users schedule confirmed reading sessions in Google Calendar.
 
 ## 22.5 Permission explanations
 
@@ -2645,7 +2647,7 @@ Required:
 
 Example:
 
-> Lydra is based on Reading Block by Zara Zhang, licensed under the MIT License. This project substantially modifies the scheduling workflow by replacing automatic event creation with user-confirmed suggestions.
+> ReadSlot is based on Reading Block by Zara Zhang, licensed under the MIT License. This project substantially modifies the scheduling workflow by replacing automatic event creation with user-confirmed suggestions.
 
 ## 23.3 What should remain private
 
@@ -2954,7 +2956,7 @@ A release is ready when:
 
 # 32. Final Recommendation
 
-Build Lydra as an open-source, local-first fork or derivative of Reading Block under MIT.
+Build ReadSlot as an open-source, local-first fork or derivative of Reading Block under MIT.
 
 Keep the first public release focused on:
 

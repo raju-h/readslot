@@ -26,7 +26,7 @@ const installChromeMock = async (page: Page) => {
         id: "proposal-1",
         itemIds: [item.id],
         calendarId: "primary",
-        title: "Lydra — 1 item",
+        title: "ReadSlot — 1 item",
         description: "1. A practical guide to local-first software",
         suggestedStart: "2026-07-15T12:00:00.000Z",
         suggestedEnd: "2026-07-15T12:30:00.000Z",
@@ -99,6 +99,7 @@ test("queue renders local reading data and primary actions", async ({ page }) =>
 test("planner keeps event creation behind explicit confirmation", async ({ page }) => {
   await installChromeMock(page);
   await page.goto("/planner.html");
+  await expect(page.getByRole("link", { name: "ReadSlot home" })).toBeVisible();
   await expect(
     page.getByText("Nothing is added to Calendar until you press the confirmation button.")
   ).toBeVisible();

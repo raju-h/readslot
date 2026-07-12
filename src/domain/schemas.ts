@@ -133,7 +133,7 @@ export const CalendarOperationSchema = z.object({
 });
 
 export const BackupSchema = z.object({
-  kind: z.literal("lydra-backup"),
+  kind: z.literal("readslot-backup"),
   schemaVersion: z.literal(SCHEMA_VERSION),
   exportedAt: IsoDateSchema,
   items: z.array(ReadingItemSchema),

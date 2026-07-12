@@ -85,7 +85,7 @@ export const ExtensionMessageSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("diagnostics.get"), payload: EmptyPayload }),
   z.object({
     type: z.literal("data.reset"),
-    payload: z.object({ confirmation: z.literal("DELETE LYDRA DATA") })
+    payload: z.object({ confirmation: z.literal("DELETE READSLOT DATA") })
   })
 ]);
 

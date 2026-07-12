@@ -1,4 +1,4 @@
-# Lydra Project Knowledge
+# ReadSlot Project Knowledge
 
 **Purpose:** Living context for maintainers, contributors, and coding agents  
 **Last updated:** 2026-07-13  
@@ -6,20 +6,21 @@
 
 ## 1. Project identity
 
-- **Product name:** Lydra
-- **Repository slug:** `lydra`
+- **Product name:** ReadSlot
+- **Tagline:** Schedule what you save.
+- **Repository slug:** `readslot`
 - **Product type:** Free, local-first Chrome/Chromium extension
 - **License direction:** MIT
 - **Upstream foundation:** Reading Block by Zara Zhang (`zarazhangrui/reading-block`), MIT licensed
-- **Canonical specification:** `Lydra_Complete_Blueprint.md`
+- **Canonical specification:** `ReadSlot_Complete_Blueprint.md`
 
-Use **Lydra** in product copy, UI labels, package metadata, documentation, OAuth configuration, and store listings. Use **Reading Block** only when referring to the upstream project or preserving its legal attribution.
+Use **ReadSlot** in product copy, UI labels, package metadata, documentation, OAuth configuration, and store listings. Use **Reading Block** only when referring to the upstream project or preserving its legal attribution.
 
-The name is chosen, but public availability and legal clearance remain release checks. Verify Chrome Web Store conflicts, GitHub availability, and trademark risk before publication.
+ReadSlot replaced the former working name on 2026-07-13 because it communicates the reading-plus-time-slot behavior directly and has fewer obvious software collisions in a preliminary search. Formal Chrome Web Store, GitHub, domain, and trademark clearance remains a publication gate.
 
 ## 2. Product in one paragraph
 
-Lydra turns saved web content into intentional reading time. A user saves an article, video, PDF, document, or repository; Lydra estimates the effort, keeps the item in a local queue, checks Google Calendar availability, and suggests suitable reading blocks. The user can edit a proposal, and Lydra creates a calendar event only after explicit confirmation. After the session, completed items leave the queue and unfinished items can return to it.
+ReadSlot turns saved web content into intentional reading time. A user saves an article, video, PDF, document, or repository; ReadSlot estimates the effort, keeps the item in a local queue, checks Google Calendar availability, and suggests suitable reading blocks. The user can edit a proposal, and ReadSlot creates a calendar event only after explicit confirmation. After the session, completed items leave the queue and unfinished items can return to it.
 
 Core promise:
 
@@ -27,9 +28,9 @@ Core promise:
 
 ## 3. Current repository state
 
-This repository now contains the Lydra Manifest V3 application, its domain/storage/Calendar
+This repository now contains the ReadSlot Manifest V3 application, its domain/storage/Calendar
 adapters, React queue/planner/session/settings surfaces, unit/property/E2E tests, CI workflows,
-store assets, release scripts, and project documentation. `Lydra_Complete_Blueprint.md` remains
+store assets, release scripts, and project documentation. `ReadSlot_Complete_Blueprint.md` remains
 the full product specification; this file records the implemented baseline.
 
 The clean TypeScript foundation is settled in ADR 0001. The upstream source was not imported
@@ -42,7 +43,7 @@ When documents or implementation details disagree, use this order:
 
 1. User-approved decisions and accepted architecture decision records (ADRs)
 2. Security, privacy, and human-confirmation invariants in this file
-3. `Lydra_Complete_Blueprint.md`
+3. `ReadSlot_Complete_Blueprint.md`
 4. Issue acceptance criteria
 5. Existing implementation behavior
 
@@ -56,7 +57,7 @@ Record a material change as an ADR and update both this file and the blueprint s
 4. **No paid API dependency:** Capture, estimation, planning, and scheduling must work without a paid service or LLM.
 5. **Least privilege:** New browser permissions, host access, OAuth scopes, or external services require explicit review and documentation.
 6. **Explainable scheduling:** Each proposed time slot states why it was selected.
-7. **Reversible behavior:** Users can cancel proposals, undo saves, and control removal of Lydra-created calendar events.
+7. **Reversible behavior:** Users can cancel proposals, undo saves, and control removal of ReadSlot-created calendar events.
 8. **Conflict safety:** Recheck availability within 30 seconds before creation. A known conflict requires a second confirmation.
 9. **Idempotency:** One confirmed user action must create at most one calendar event.
 10. **No hidden telemetry:** Diagnostics and product metrics are local by default and exported only by explicit user action.
@@ -89,7 +90,7 @@ Record a material change as an ADR and update both this file and the blueprint s
 
 ## 7. Architecture baseline
 
-Lydra is a Manifest V3 browser extension with a non-persistent background service worker.
+ReadSlot is a Manifest V3 browser extension with a non-persistent background service worker.
 
 ```text
 Content script / popup / extension pages

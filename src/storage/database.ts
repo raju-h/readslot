@@ -1,13 +1,13 @@
 import Dexie, { type EntityTable } from "dexie";
 import type { CalendarOperation, Proposal, ReadingItem, ReadingSession } from "../domain/schemas";
 
-export class LydraDatabase extends Dexie {
+export class ReadSlotDatabase extends Dexie {
   items!: EntityTable<ReadingItem, "id">;
   proposals!: EntityTable<Proposal, "id">;
   sessions!: EntityTable<ReadingSession, "id">;
   calendarOperations!: EntityTable<CalendarOperation, "id">;
 
-  constructor(name = "lydra") {
+  constructor(name = "readslot") {
     super(name);
     this.version(1).stores({
       items: "&id, &canonicalUrl, status, priority, createdAt, updatedAt, deletedAt, *tags",
@@ -18,4 +18,4 @@ export class LydraDatabase extends Dexie {
   }
 }
 
-export const database = new LydraDatabase();
+export const database = new ReadSlotDatabase();

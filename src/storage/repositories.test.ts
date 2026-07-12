@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { SCHEMA_VERSION, ReadingItemSchema } from "../domain/schemas";
-import { LydraDatabase } from "./database";
+import { ReadSlotDatabase } from "./database";
 import { DexieReadingRepository } from "./repositories";
 
 const makeItem = (id: string, url = `https://example.com/${id}`) =>
@@ -22,10 +22,10 @@ const makeItem = (id: string, url = `https://example.com/${id}`) =>
   });
 
 describe("DexieReadingRepository", () => {
-  let db: LydraDatabase;
+  let db: ReadSlotDatabase;
   let repository: DexieReadingRepository;
   beforeEach(async () => {
-    db = new LydraDatabase(`test-${crypto.randomUUID()}`);
+    db = new ReadSlotDatabase(`test-${crypto.randomUUID()}`);
     repository = new DexieReadingRepository(db);
     await db.open();
   });

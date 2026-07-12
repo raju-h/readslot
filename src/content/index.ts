@@ -2,7 +2,7 @@ import { Readability } from "@mozilla/readability";
 
 declare global {
   interface Window {
-    __LYDRA_CONTENT_READY__?: boolean;
+    __READSLOT_CONTENT_READY__?: boolean;
   }
 }
 
@@ -31,9 +31,9 @@ const extract = () => {
 };
 
 const showToast = (message: string, itemId?: string) => {
-  document.getElementById("lydra-toast-host")?.remove();
+  document.getElementById("readslot-toast-host")?.remove();
   const host = document.createElement("div");
-  host.id = "lydra-toast-host";
+  host.id = "readslot-toast-host";
   host.style.cssText = "position:fixed;z-index:2147483647;right:20px;bottom:20px";
   const shadow = host.attachShadow({ mode: "closed" });
   const box = document.createElement("div");
@@ -53,11 +53,11 @@ const showToast = (message: string, itemId?: string) => {
     box.append(undo);
   }
   const open = document.createElement("button");
-  open.textContent = "Open Lydra";
+  open.textContent = "Open ReadSlot";
   open.style.cssText = "border:0;background:transparent;color:#c9f56b;font:inherit;cursor:pointer";
   open.addEventListener(
     "click",
-    () => void chrome.runtime.sendMessage({ type: "lydra.open", payload: {} })
+    () => void chrome.runtime.sendMessage({ type: "readslot.open", payload: {} })
   );
   box.append(open);
   shadow.append(box);
@@ -65,12 +65,12 @@ const showToast = (message: string, itemId?: string) => {
   setTimeout(() => host.remove(), 6000);
 };
 
-if (!window.__LYDRA_CONTENT_READY__) {
-  window.__LYDRA_CONTENT_READY__ = true;
+if (!window.__READSLOT_CONTENT_READY__) {
+  window.__READSLOT_CONTENT_READY__ = true;
   chrome.runtime.onMessage.addListener((message: unknown, _sender, sendResponse) => {
     if (typeof message !== "object" || message === null || !("type" in message)) return;
-    if (message.type === "lydra.extract") sendResponse(extract());
-    if (message.type === "lydra.toast" && "payload" in message) {
+    if (message.type === "readslot.extract") sendResponse(extract());
+    if (message.type === "readslot.toast" && "payload" in message) {
       const payload = message.payload as { message: string; itemId?: string };
       showToast(payload.message, payload.itemId);
       sendResponse(true);

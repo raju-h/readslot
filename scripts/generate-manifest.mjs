@@ -4,23 +4,23 @@ import { resolve } from "node:path";
 const root = resolve(import.meta.dirname, "..");
 const pkg = JSON.parse(await readFile(resolve(root, "package.json"), "utf8"));
 const isRelease = process.argv.includes("--release");
-const clientId = process.env.LYDRA_GOOGLE_OAUTH_CLIENT_ID?.trim();
+const clientId = process.env.READSLOT_GOOGLE_OAUTH_CLIENT_ID?.trim();
 const clientIdPattern = /^[A-Za-z0-9_-]+\.apps\.googleusercontent\.com$/u;
 
 if (clientId && !clientIdPattern.test(clientId)) {
-  throw new Error("LYDRA_GOOGLE_OAUTH_CLIENT_ID is not a valid Google OAuth client ID.");
+  throw new Error("READSLOT_GOOGLE_OAUTH_CLIENT_ID is not a valid Google OAuth client ID.");
 }
 
 const manifest = {
   manifest_version: 3,
-  name: "Lydra",
-  short_name: "Lydra",
+  name: "ReadSlot",
+  short_name: "ReadSlot",
   version: pkg.version,
   description:
     "Save useful content, find realistic time, and confirm reading blocks in Google Calendar.",
   minimum_chrome_version: "120",
   action: {
-    default_title: "Save this page to Lydra",
+    default_title: "Save this page to ReadSlot",
     default_icon: {
       16: "icons/icon-16.png",
       32: "icons/icon-32.png",
@@ -55,11 +55,11 @@ const manifest = {
   commands: {
     "capture-page": {
       suggested_key: { default: "Alt+Shift+S", mac: "MacCtrl+Shift+S" },
-      description: "Save the current page to Lydra"
+      description: "Save the current page to ReadSlot"
     },
     "open-dashboard": {
       suggested_key: { default: "Alt+Shift+L", mac: "MacCtrl+Shift+L" },
-      description: "Open the Lydra queue"
+      description: "Open the ReadSlot queue"
     }
   },
   content_security_policy: {
@@ -77,7 +77,7 @@ if (clientId) {
     ]
   };
 } else if (isRelease) {
-  throw new Error("LYDRA_GOOGLE_OAUTH_CLIENT_ID is required for release builds.");
+  throw new Error("READSLOT_GOOGLE_OAUTH_CLIENT_ID is required for release builds.");
 }
 
 const dist = resolve(root, "dist");

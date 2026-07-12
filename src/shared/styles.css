@@ -59,8 +59,7 @@ a {
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid rgba(80, 69, 130, 0.12);
-  background: rgba(248, 247, 252, 0.88);
-  backdrop-filter: blur(18px);
+  background: #f8f7fc;
   position: sticky;
   top: 0;
   z-index: 10;

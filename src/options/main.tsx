@@ -76,13 +76,13 @@ const App = () => {
     );
   };
   const reset = async () => {
-    if (confirmation !== "DELETE LYDRA DATA") return;
+    if (confirmation !== "DELETE READSLOT DATA") return;
     const result = await sendMessage({
       type: "data.reset",
-      payload: { confirmation: "DELETE LYDRA DATA" }
+      payload: { confirmation: "DELETE READSLOT DATA" }
     });
     if (result.ok) {
-      setNotice({ tone: "success", text: "All local Lydra data was deleted." });
+      setNotice({ tone: "success", text: "All local ReadSlot data was deleted." });
       setConfirmation("");
       await load();
     }
@@ -97,7 +97,7 @@ const App = () => {
     link.href = URL.createObjectURL(
       new Blob([JSON.stringify(result.value, null, 2)], { type: "application/json" })
     );
-    link.download = "lydra-diagnostics.json";
+    link.download = "readslot-diagnostics.json";
     link.click();
     URL.revokeObjectURL(link.href);
   };
@@ -379,12 +379,12 @@ const App = () => {
         </p>
         <div className="actions">
           <label>
-            Type DELETE LYDRA DATA
+            Type DELETE READSLOT DATA
             <input value={confirmation} onChange={(event) => setConfirmation(event.target.value)} />
           </label>
           <button
             className="button button-danger"
-            disabled={confirmation !== "DELETE LYDRA DATA"}
+            disabled={confirmation !== "DELETE READSLOT DATA"}
             onClick={() => void reset()}
           >
             Delete everything

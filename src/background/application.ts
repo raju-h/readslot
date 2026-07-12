@@ -18,7 +18,7 @@ import {
   DexieProposalRepository,
   DexieReadingRepository,
   DexieSessionRepository,
-  LydraBackupRepository
+  ReadSlotBackupRepository
 } from "../storage/repositories";
 import { CaptureService } from "./capture";
 import { database } from "../storage/database";
@@ -29,7 +29,7 @@ const proposals = new DexieProposalRepository();
 const sessions = new DexieSessionRepository();
 const settings = new ChromeSettingsRepository();
 const operations = new DexieCalendarOperationRepository();
-const backups = new LydraBackupRepository();
+const backups = new ReadSlotBackupRepository();
 const calendar = new GoogleCalendarGateway();
 export const capture = new CaptureService(items, settings);
 const confirming = new Set<string>();
@@ -77,7 +77,7 @@ const parseImportedUrls = (
 
 const deterministicEventId = async (id: string): Promise<string> => {
   const bytes = new Uint8Array(
-    await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`lydra:${id}`))
+    await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`readslot:${id}`))
   );
   const alphabet = "0123456789abcdefghijklmnopqrstuv";
   let bits = "";
@@ -85,7 +85,7 @@ const deterministicEventId = async (id: string): Promise<string> => {
   let encoded = "";
   for (let index = 0; index + 5 <= bits.length; index += 5)
     encoded += alphabet[Number.parseInt(bits.slice(index, index + 5), 2)];
-  return `lydra${encoded.slice(0, 47)}`;
+  return `readslot${encoded.slice(0, 47)}`;
 };
 
 const overlap = (proposal: Proposal, busy: Array<{ start: string; end: string }>): boolean => {
@@ -168,7 +168,7 @@ const confirmProposal = async (
         timezone: settingsResult.value.timezone,
         reminderMinutes: proposal.reminderMinutes,
         transparency: proposal.transparency,
-        privateProperties: { lydraSessionId: proposal.id, lydraProposalId: proposal.id }
+        privateProperties: { readslotSessionId: proposal.id, readslotProposalId: proposal.id }
       });
       if (!response.ok) {
         const reconciled = await calendar.getEvent(proposal.calendarId, eventId);
@@ -241,11 +241,11 @@ export const handleMessage = async (input: unknown): Promise<Result<unknown>> =>
         const saved = await settings.put(next);
         if (saved.ok) {
           if (next.weeklyPlanningNotification)
-            await chrome.alarms.create("lydra-weekly-plan", {
+            await chrome.alarms.create("readslot-weekly-plan", {
               delayInMinutes: 7 * 24 * 60,
               periodInMinutes: 7 * 24 * 60
             });
-          else await chrome.alarms.clear("lydra-weekly-plan");
+          else await chrome.alarms.clear("readslot-weekly-plan");
         }
         return saved;
       }
@@ -259,27 +259,27 @@ export const handleMessage = async (input: unknown): Promise<Result<unknown>> =>
         const active = itemResult.value.filter((item) => item.status !== "deleted");
         if (message.payload.format === "csv") {
           return ok({
-            filename: "lydra-items.csv",
+            filename: "readslot-items.csv",
             mimeType: "text/csv",
             text: `title,url,status,priority,minutes,tags\n${active.map((item) => [item.title, item.originalUrl, item.status, item.priority, item.plannedMinutes ?? item.estimatedMinutes, item.tags.join("|")].map(escapeCsv).join(",")).join("\n")}\n`
           });
         }
         if (message.payload.format === "markdown") {
           return ok({
-            filename: "lydra-items.md",
+            filename: "readslot-items.md",
             mimeType: "text/markdown",
-            text: `# Lydra reading queue\n\n${active.map((item) => `- [${item.title}](${item.originalUrl}) — ${item.plannedMinutes ?? item.estimatedMinutes} min · ${item.status}`).join("\n")}\n`
+            text: `# ReadSlot reading queue\n\n${active.map((item) => `- [${item.title}](${item.originalUrl}) — ${item.plannedMinutes ?? item.estimatedMinutes} min · ${item.status}`).join("\n")}\n`
           });
         }
         if (message.payload.format === "bookmarks") {
           return ok({
-            filename: "lydra-bookmarks.html",
+            filename: "readslot-bookmarks.html",
             mimeType: "text/html",
-            text: `<!DOCTYPE NETSCAPE-Bookmark-file-1>\n<TITLE>Lydra</TITLE>\n<H1>Lydra</H1>\n<DL><p>\n${active.map((item) => `<DT><A HREF="${item.originalUrl.replaceAll('"', "&quot;")}">${item.title.replaceAll("<", "&lt;")}</A>`).join("\n")}\n</DL><p>\n`
+            text: `<!DOCTYPE NETSCAPE-Bookmark-file-1>\n<TITLE>ReadSlot</TITLE>\n<H1>ReadSlot</H1>\n<DL><p>\n${active.map((item) => `<DT><A HREF="${item.originalUrl.replaceAll('"', "&quot;")}">${item.title.replaceAll("<", "&lt;")}</A>`).join("\n")}\n</DL><p>\n`
           });
         }
         return ok({
-          filename: "lydra-urls.txt",
+          filename: "readslot-urls.txt",
           mimeType: "text/plain",
           text: `${active.map((item) => item.originalUrl).join("\n")}\n`
         });

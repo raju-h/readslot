@@ -22,7 +22,7 @@ export class CaptureService {
   private async extract(tabId: number): Promise<ExtractedMetadata> {
     try {
       await chrome.scripting.executeScript({ target: { tabId }, files: ["content.js"] });
-      return await chrome.tabs.sendMessage(tabId, { type: "lydra.extract" });
+      return await chrome.tabs.sendMessage(tabId, { type: "readslot.extract" });
     } catch {
       return {};
     }
@@ -123,13 +123,13 @@ export class CaptureService {
   ): Promise<void> {
     const message = result.ok
       ? result.value.duplicate
-        ? "Already saved in Lydra"
-        : "Saved to Lydra"
+        ? "Already saved in ReadSlot"
+        : "Saved to ReadSlot"
       : result.error.message;
     try {
       await chrome.scripting.executeScript({ target: { tabId }, files: ["content.js"] });
       await chrome.tabs.sendMessage(tabId, {
-        type: "lydra.toast",
+        type: "readslot.toast",
         payload: {
           message,
           itemId: result.ok && !result.value.duplicate ? result.value.item.id : undefined

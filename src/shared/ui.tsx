@@ -23,11 +23,11 @@ export const PageShell = ({
 }: PropsWithChildren<{ title: string; eyebrow: string; actions?: ReactNode }>) => (
   <div className="app-shell">
     <header className="topbar">
-      <a className="brand" href={extensionUrl("queue.html")} aria-label="Lydra home">
+      <a className="brand" href={extensionUrl("queue.html")} aria-label="ReadSlot home">
         <span className="brand-mark" aria-hidden="true">
-          L
+          R
         </span>
-        <span>Lydra</span>
+        <span>ReadSlot</span>
       </a>
       <nav aria-label="Primary navigation">
         <a href={extensionUrl("queue.html")}>Queue</a>

@@ -26,7 +26,7 @@ import type {
 } from "../domain/ports";
 import { err, ok, toDomainError, type Result } from "../domain/result";
 import { canTransitionItem } from "../domain/transitions";
-import { database, type LydraDatabase } from "./database";
+import { database, type ReadSlotDatabase } from "./database";
 
 const safe = async <T>(operation: () => Promise<T>): Promise<Result<T>> => {
   try {
@@ -36,13 +36,13 @@ const safe = async <T>(operation: () => Promise<T>): Promise<Result<T>> => {
     return err({
       ...domainError,
       code: "STORAGE_ERROR",
-      message: "Lydra could not update local storage."
+      message: "ReadSlot could not update local storage."
     });
   }
 };
 
 export class DexieReadingRepository implements ReadingRepository {
-  constructor(private readonly db: LydraDatabase = database) {}
+  constructor(private readonly db: ReadSlotDatabase = database) {}
 
   list(query: ItemQuery = {}): Promise<Result<ReadingItem[]>> {
     return safe(async () => {
@@ -157,7 +157,7 @@ export class DexieProposalRepository
   extends DexieEntityRepository<Proposal>
   implements ProposalRepository
 {
-  constructor(db: LydraDatabase = database) {
+  constructor(db: ReadSlotDatabase = database) {
     super(db.proposals as unknown as Table<Proposal, string>, (value) =>
       ProposalSchema.parse(value)
     );
@@ -168,7 +168,7 @@ export class DexieSessionRepository
   extends DexieEntityRepository<ReadingSession>
   implements SessionRepository
 {
-  constructor(db: LydraDatabase = database) {
+  constructor(db: ReadSlotDatabase = database) {
     super(db.sessions as unknown as Table<ReadingSession, string>, (value) =>
       ReadingSessionSchema.parse(value)
     );
@@ -176,7 +176,7 @@ export class DexieSessionRepository
 }
 
 export class DexieCalendarOperationRepository implements CalendarOperationRepository {
-  constructor(private readonly db: LydraDatabase = database) {}
+  constructor(private readonly db: ReadSlotDatabase = database) {}
 
   get(id: string): Promise<Result<CalendarOperation | undefined>> {
     return safe(async () => {
@@ -216,9 +216,9 @@ export class ChromeSettingsRepository implements SettingsRepository {
   }
 }
 
-export class LydraBackupRepository implements BackupRepository {
+export class ReadSlotBackupRepository implements BackupRepository {
   constructor(
-    private readonly db: LydraDatabase = database,
+    private readonly db: ReadSlotDatabase = database,
     private readonly settingsRepository: SettingsRepository = new ChromeSettingsRepository()
   ) {}
 
@@ -227,7 +227,7 @@ export class LydraBackupRepository implements BackupRepository {
       const settings = await this.settingsRepository.get();
       if (!settings.ok) throw new Error(settings.error.message);
       return BackupSchema.parse({
-        kind: "lydra-backup",
+        kind: "readslot-backup",
         schemaVersion: SCHEMA_VERSION,
         exportedAt: new Date().toISOString(),
         items: await this.db.items.toArray(),

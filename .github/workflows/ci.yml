@@ -29,6 +29,6 @@ jobs:
         continue-on-error: true
       - uses: actions/upload-artifact@v6
         with:
-          name: lydra-development-build
+          name: readslot-development-build
           path: dist/
           if-no-files-found: error

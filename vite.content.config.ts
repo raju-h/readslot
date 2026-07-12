@@ -8,7 +8,7 @@ export default defineConfig({
     sourcemap: false,
     lib: {
       entry: resolve(import.meta.dirname, "src/content/index.ts"),
-      name: "LydraContent",
+      name: "ReadSlotContent",
       formats: ["iife"],
       fileName: () => "content.js"
     }

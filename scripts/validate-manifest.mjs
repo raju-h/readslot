@@ -8,7 +8,7 @@ const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
 const errors = [];
 
 if (manifest.manifest_version !== 3) errors.push("manifest_version must be 3");
-if (manifest.name !== "Lydra") errors.push("extension name must be Lydra");
+if (manifest.name !== "ReadSlot") errors.push("extension name must be ReadSlot");
 if (manifest.permissions?.includes("tabs")) errors.push("broad tabs permission is forbidden");
 if (manifest.host_permissions?.includes("<all_urls>")) errors.push("<all_urls> is forbidden");
 if (manifest.content_security_policy?.extension_pages.includes("unsafe-eval"))

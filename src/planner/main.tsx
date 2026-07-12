@@ -264,7 +264,7 @@ const App = () => {
                 <div className="notice notice-warning">
                   <strong>Conflict detected.</strong>
                   <p>
-                    This creates over another event. Lydra will proceed only after this second
+                    This creates over another event. ReadSlot will proceed only after this second
                     confirmation.
                   </p>
                   <button

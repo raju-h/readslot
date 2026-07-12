@@ -71,7 +71,7 @@ const selectItems = (items: ReadingItem[], maximumMinutes: number): ReadingItem[
 };
 
 const eventDescription = (items: ReadingItem[]): string =>
-  `${items.map((item, index) => `${index + 1}. ${item.title} — ${item.plannedMinutes ?? item.estimatedMinutes} min\n${item.originalUrl}`).join("\n\n")}\n\nCreated by Lydra.`;
+  `${items.map((item, index) => `${index + 1}. ${item.title} — ${item.plannedMinutes ?? item.estimatedMinutes} min\n${item.originalUrl}`).join("\n\n")}\n\nCreated by ReadSlot.`;
 
 const dateForOffset = (startDate: string, offset: number): string =>
   addDays(new Date(`${startDate}T12:00:00Z`), offset)
@@ -154,7 +154,7 @@ export const generateSuggestions = (input: SuggestionInput): Proposal[] => {
           id: crypto.randomUUID(),
           itemIds: selected.map((item) => item.id),
           calendarId: settings.destinationCalendarId ?? "primary",
-          title: `Lydra — ${selected.length} ${selected.length === 1 ? "item" : "items"}`,
+          title: `ReadSlot — ${selected.length} ${selected.length === 1 ? "item" : "items"}`,
           description: eventDescription(selected),
           suggestedStart: start,
           suggestedEnd: end,

@@ -74,7 +74,7 @@ const App = () => {
       setUrl("");
       setNotice({
         tone: result.value.duplicate ? "info" : "success",
-        text: result.value.duplicate ? "That URL is already in Lydra." : "Saved to your queue."
+        text: result.value.duplicate ? "That URL is already in ReadSlot." : "Saved to your queue."
       });
       await load();
     } else setNotice({ tone: "danger", text: result.error.message });
@@ -115,7 +115,7 @@ const App = () => {
     link.href = URL.createObjectURL(
       new Blob([JSON.stringify(result.value, null, 2)], { type: "application/json" })
     );
-    link.download = `lydra-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    link.download = `readslot-backup-${new Date().toISOString().slice(0, 10)}.json`;
     link.click();
     URL.revokeObjectURL(link.href);
   };
@@ -139,7 +139,7 @@ const App = () => {
       const backup = JSON.parse(await file.text()) as Backup;
       if (
         !window.confirm(
-          `Import ${backup.items?.length ?? 0} items from this Lydra backup? Existing URLs will be preserved.`
+          `Import ${backup.items?.length ?? 0} items from this ReadSlot backup? Existing URLs will be preserved.`
         )
       )
         return;

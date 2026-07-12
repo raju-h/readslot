@@ -84,7 +84,7 @@ describe("GoogleCalendarGateway", () => {
       async (_input: RequestInfo | URL, _init?: RequestInit) =>
         new Response(
           JSON.stringify({
-            id: "lydra012345",
+            id: "readslot012345",
             start: { dateTime: "2026-07-14T12:00:00.000Z" },
             end: { dateTime: "2026-07-14T12:30:00.000Z" }
           }),
@@ -93,20 +93,20 @@ describe("GoogleCalendarGateway", () => {
     );
     vi.stubGlobal("fetch", fetchMock);
     const result = await new GoogleCalendarGateway().createEvent({
-      eventId: "lydra012345",
+      eventId: "readslot012345",
       calendarId: "primary",
-      title: "Lydra — 1 item",
+      title: "ReadSlot — 1 item",
       description: "Confirmed by the user.",
       start: "2026-07-14T12:00:00.000Z",
       end: "2026-07-14T12:30:00.000Z",
       timezone: "Asia/Dhaka",
       reminderMinutes: 10,
       transparency: "opaque",
-      privateProperties: { lydraProposalId: "proposal-1" }
+      privateProperties: { readslotProposalId: "proposal-1" }
     });
     expect(result.ok).toBe(true);
     const request = fetchMock.mock.calls[0][1];
     expect(typeof request?.body).toBe("string");
-    expect(JSON.parse(request?.body as string)).toMatchObject({ id: "lydra012345" });
+    expect(JSON.parse(request?.body as string)).toMatchObject({ id: "readslot012345" });
   });
 });

@@ -1,10 +1,10 @@
 import { capture, handleMessage, syncCalendarSessions } from "./application";
 
 const MENU = {
-  open: "lydra-open",
-  saveLink: "lydra-save-link",
-  saveSelection: "lydra-save-selection",
-  plan: "lydra-plan"
+  open: "readslot-open",
+  saveLink: "readslot-save-link",
+  saveSelection: "readslot-save-selection",
+  plan: "readslot-plan"
 } as const;
 
 const openPage = (page: "queue.html" | "planner.html" | "session.html" | "options.html") =>
@@ -12,20 +12,20 @@ const openPage = (page: "queue.html" | "planner.html" | "session.html" | "option
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.removeAll(() => {
-    chrome.contextMenus.create({ id: MENU.open, title: "Open Lydra", contexts: ["action"] });
+    chrome.contextMenus.create({ id: MENU.open, title: "Open ReadSlot", contexts: ["action"] });
     chrome.contextMenus.create({ id: MENU.plan, title: "Plan reading time", contexts: ["action"] });
     chrome.contextMenus.create({
       id: MENU.saveLink,
-      title: "Save link to Lydra",
+      title: "Save link to ReadSlot",
       contexts: ["link"]
     });
     chrome.contextMenus.create({
       id: MENU.saveSelection,
-      title: "Save selection to Lydra",
+      title: "Save selection to ReadSlot",
       contexts: ["selection"]
     });
   });
-  void chrome.alarms.create("lydra-sync", { periodInMinutes: 30 });
+  void chrome.alarms.create("readslot-sync", { periodInMinutes: 30 });
 });
 
 chrome.action.onClicked.addListener((tab) => {
@@ -66,7 +66,7 @@ chrome.runtime.onMessage.addListener((message: unknown, _sender, sendResponse) =
     typeof message === "object" &&
     message !== null &&
     "type" in message &&
-    message.type === "lydra.open"
+    message.type === "readslot.open"
   ) {
     void openPage("queue.html");
     sendResponse(true);
@@ -77,12 +77,12 @@ chrome.runtime.onMessage.addListener((message: unknown, _sender, sendResponse) =
 });
 
 chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === "lydra-sync") {
+  if (alarm.name === "readslot-sync") {
     void syncCalendarSessions();
     return;
   }
-  if (alarm.name === "lydra-weekly-plan") {
-    void chrome.notifications.create("lydra-weekly-plan", {
+  if (alarm.name === "readslot-weekly-plan") {
+    void chrome.notifications.create("readslot-weekly-plan", {
       type: "basic",
       iconUrl: "icons/icon-128.png",
       title: "Plan a lighter reading week",
@@ -102,5 +102,5 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 
 chrome.notifications.onClicked.addListener((notificationId) => {
   if (notificationId.startsWith("review:")) void openPage("session.html");
-  if (notificationId === "lydra-weekly-plan") void openPage("planner.html");
+  if (notificationId === "readslot-weekly-plan") void openPage("planner.html");
 });

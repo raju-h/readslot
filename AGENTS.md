@@ -1,6 +1,6 @@
-# Lydra Development Guide
+# ReadSlot Development Guide
 
-Read `PROJECT_KNOWLEDGE.md` and the relevant section of `Lydra_Complete_Blueprint.md` before changing the project.
+Read `PROJECT_KNOWLEDGE.md` and the relevant section of `ReadSlot_Complete_Blueprint.md` before changing the project.
 
 ## Current state
 
@@ -10,10 +10,11 @@ client IDs. Do not add placeholder credentials to tracked files or weaken releas
 
 ## Naming
 
-- Product and extension name: **Lydra**
-- Repository/package slug: `lydra`
+- Product and extension name: **ReadSlot**
+- Repository/package slug: `readslot`
+- Tagline: **Schedule what you save.**
 - Use **Reading Block** only for upstream MIT attribution.
-- Default Calendar title pattern: `Lydra — N items`
+- Default Calendar title pattern: `ReadSlot — N items`
 
 ## Guardrails
 

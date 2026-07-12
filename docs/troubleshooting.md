@@ -1,6 +1,6 @@
 # Troubleshooting
 
-- **Calendar is not configured:** rebuild with `LYDRA_GOOGLE_OAUTH_CLIENT_ID`.
+- **Calendar is not configured:** rebuild with `READSLOT_GOOGLE_OAUTH_CLIENT_ID`.
 - **Sign-in is denied:** confirm the OAuth client uses the current extension ID and the account is a test user.
 - **Calendar is read-only:** select a calendar with writer or owner access.
 - **No suggestions:** add queued items, expand allowed days/hours, or increase the planning horizon.
