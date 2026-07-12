@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title id="title">Lydra</title>
+  <defs>
+    <linearGradient id="g" x1="20" y1="14" x2="108" y2="114" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7057F5"/><stop offset="1" stop-color="#3B2E88"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#g)"/>
+  <path d="M35 29h15v54c0 7 4 11 12 11h31v15H60c-17 0-25-9-25-25V29Z" fill="#fff"/>
+  <path d="M59 41h34v15H59zM59 66h26v15H59z" fill="#C9F56B"/>
+</svg>

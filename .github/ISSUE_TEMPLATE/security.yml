@@ -1,0 +1,6 @@
+name: Security guidance
+description: Do not file vulnerability details publicly.
+body:
+  - type: markdown
+    attributes:
+      value: Follow SECURITY.md and contact the maintainer privately. Do not include sensitive details here.

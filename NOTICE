@@ -1,0 +1,5 @@
+Lydra is inspired by and derived in product direction from Reading Block by Zara Zhang:
+https://github.com/zarazhangrui/reading-block
+
+Reading Block is available under the MIT License. Lydra is a clean TypeScript
+implementation and preserves this attribution in recognition of the upstream work.
