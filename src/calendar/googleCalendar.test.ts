@@ -186,4 +186,52 @@ describe("GoogleCalendarGateway", () => {
     expect(typeof request?.body).toBe("string");
     expect(JSON.parse(request?.body as string)).toMatchObject({ id: "readslot012345" });
   });
+
+  it("treats only a 404 event lookup as not found", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response("{}", { status: 404 }))
+    );
+
+    const result = await new GoogleCalendarGateway().getEvent("primary", "missing-event");
+
+    expect(result).toEqual({ ok: true, value: undefined });
+  });
+
+  it("does not mistake a Calendar outage for a missing event", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response("{}", { status: 500 }))
+    );
+
+    const result = await new GoogleCalendarGateway().getEvent("primary", "existing-event");
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error.code).toBe("CALENDAR_UNAVAILABLE");
+      expect(result.error.retryable).toBe(true);
+    }
+  });
+
+  it("reports a deterministic event ID collision on 409", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response("{}", { status: 409 }))
+    );
+
+    const result = await new GoogleCalendarGateway().createEvent({
+      eventId: "readslot012345",
+      calendarId: "primary",
+      title: "ReadSlot — 1 item",
+      description: "Confirmed by the user.",
+      start: "2026-07-14T12:00:00.000Z",
+      end: "2026-07-14T12:30:00.000Z",
+      timezone: "Asia/Dhaka",
+      transparency: "opaque",
+      privateProperties: { readslotProposalId: "proposal-1" }
+    });
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error.code).toBe("CALENDAR_EVENT_EXISTS");
+  });
 });

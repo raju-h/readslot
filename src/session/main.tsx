@@ -5,6 +5,7 @@ import { sendMessage } from "../shared/client";
 import { EmptyState, Notice, PageShell, formatDateTime } from "../shared/ui";
 
 type ReviewState = Record<string, "unfinished" | "completed" | "skipped">;
+type ReviewNotice = { text: string; tone: "success" | "danger" };
 
 const SessionCard = ({
   session,
@@ -34,11 +35,14 @@ const SessionCard = ({
       ])
     )
   );
-  const [notice, setNotice] = useState<string>();
+  const [notice, setNotice] = useState<ReviewNotice>();
+  const [submitting, setSubmitting] = useState(false);
   const now = Date.now();
   const remainingMinutes = Math.max(0, Math.ceil((new Date(session.end).getTime() - now) / 60_000));
 
   const submit = async () => {
+    if (submitting) return;
+    setSubmitting(true);
     const result = await sendMessage<ReadingSession>({
       type: "sessions.review",
       payload: {
@@ -52,9 +56,13 @@ const SessionCard = ({
       }
     });
     if (result.ok) {
-      setNotice("Review saved. Unfinished items returned to your queue.");
+      setNotice({
+        text: "Review saved. Unfinished items returned to your queue.",
+        tone: "success"
+      });
       await onReviewed();
-    } else setNotice(result.error.message);
+    } else setNotice({ text: result.error.message, tone: "danger" });
+    setSubmitting(false);
   };
 
   return (
@@ -70,7 +78,7 @@ const SessionCard = ({
           </span>
         )}
       </div>
-      {notice && <Notice tone="success">{notice}</Notice>}
+      {notice && <Notice tone={notice.tone}>{notice.text}</Notice>}
       <ul className="session-items">
         {sessionItems.map((item) => (
           <li className="session-item" key={item.id}>
@@ -83,7 +91,7 @@ const SessionCard = ({
               onChange={(event) =>
                 setReview({ ...review, [item.id]: event.target.value as ReviewState[string] })
               }
-              disabled={session.status === "completed"}
+              disabled={session.status === "completed" || submitting}
             >
               <option value="unfinished">Move to later</option>
               <option value="completed">Completed</option>
@@ -96,14 +104,19 @@ const SessionCard = ({
         <div className="actions">
           <button
             className="button button-secondary"
+            disabled={submitting}
             onClick={() =>
               sessionItems.forEach((item) => window.open(item.originalUrl, "_blank", "noopener"))
             }
           >
             Open all
           </button>
-          <button className="button button-primary" onClick={() => void submit()}>
-            Finish review
+          <button
+            className="button button-primary"
+            disabled={submitting}
+            onClick={() => void submit()}
+          >
+            {submitting ? "Saving review…" : "Finish review"}
           </button>
         </div>
       )}
@@ -111,7 +124,7 @@ const SessionCard = ({
   );
 };
 
-const App = () => {
+export const SessionApp = () => {
   const [sessions, setSessions] = useState<ReadingSession[]>([]);
   const [items, setItems] = useState<ReadingItem[]>([]);
   const [error, setError] = useState<string>();
@@ -151,8 +164,10 @@ const App = () => {
   );
 };
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>
-);
+const root = document.getElementById("root");
+if (root)
+  createRoot(root).render(
+    <StrictMode>
+      <SessionApp />
+    </StrictMode>
+  );

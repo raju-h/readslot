@@ -6,6 +6,7 @@ import { err, ok, toDomainError, type Result } from "../domain/result";
 import {
   CalendarOperationSchema,
   ProposalSchema,
+  ReadingItemSchema,
   ReadingSessionSchema,
   SCHEMA_VERSION,
   SettingsSchema,
@@ -24,6 +25,7 @@ import { CaptureService } from "./capture";
 import { database } from "../storage/database";
 import { normalizeUrl } from "../domain/url";
 import { parseImportedUrls } from "../domain/import";
+import { canTransitionItem } from "../domain/transitions";
 
 const items = new DexieReadingRepository();
 const proposals = new DexieProposalRepository();
@@ -57,6 +59,79 @@ const overlap = (proposal: Proposal, busy: Array<{ start: string; end: string }>
     (interval) =>
       start < new Date(interval.end).getTime() && end > new Date(interval.start).getTime()
   );
+};
+
+const reviewSession = async (
+  sessionId: string,
+  completedItemIds: string[],
+  skippedItemIds: string[]
+): Promise<Result<unknown>> => {
+  const sessionResult = await sessions.get(sessionId);
+  if (!sessionResult.ok) return sessionResult;
+  const session = sessionResult.value;
+  if (session.status === "completed")
+    return err({ code: "CONFLICT", message: "This reading session was already reviewed." });
+
+  const completed = new Set(completedItemIds);
+  const skipped = new Set(skippedItemIds);
+  if ([...completed].some((itemId) => skipped.has(itemId)))
+    return err({
+      code: "INVALID_INPUT",
+      message: "A reading item cannot be both completed and skipped."
+    });
+  const sessionItemIds = new Set(session.itemIds);
+  if ([...completed, ...skipped].some((itemId) => !sessionItemIds.has(itemId)))
+    return err({
+      code: "INVALID_INPUT",
+      message: "The review contains an item that is not part of this session."
+    });
+
+  const now = new Date().toISOString();
+  return database.transaction("rw", [database.items, database.sessions], async () => {
+    const currentItems = await database.items.bulkGet(session.itemIds);
+    if (currentItems.some((item) => !item))
+      return err({
+        code: "NOT_FOUND",
+        message: "One or more reading items in this session no longer exist."
+      });
+
+    const parsedItems = currentItems.map((item) => ReadingItemSchema.parse(item));
+    const targetStatus = (itemId: string) =>
+      completed.has(itemId)
+        ? ("completed" as const)
+        : skipped.has(itemId)
+          ? ("archived" as const)
+          : ("queued" as const);
+    const invalidItem = parsedItems.find(
+      (item) => !canTransitionItem(item.status, targetStatus(item.id))
+    );
+    if (invalidItem)
+      return err({
+        code: "CONFLICT",
+        message: "A reading item changed state before this review could be saved."
+      });
+
+    const updatedItems = parsedItems.map((current) => {
+      const status = targetStatus(current.id);
+      return ReadingItemSchema.parse({
+        ...current,
+        status,
+        completedAt: status === "completed" ? now : undefined,
+        archivedAt: status === "archived" ? now : undefined,
+        updatedAt: now
+      });
+    });
+    const reviewedSession = ReadingSessionSchema.parse({
+      ...session,
+      completedItemIds: [...completed],
+      skippedItemIds: [...skipped],
+      status: "completed",
+      updatedAt: now
+    });
+    await database.items.bulkPut(updatedItems);
+    await database.sessions.put(reviewedSession);
+    return ok(reviewedSession);
+  });
 };
 
 const confirmProposal = async (
@@ -118,6 +193,7 @@ const confirmProposal = async (
     if (!storedOperation.ok) return storedOperation;
 
     const existing = await calendar.getEvent(proposal.calendarId, eventId);
+    if (!existing.ok) return existing;
     let created = existing.ok ? existing.value : undefined;
     if (!created) {
       const response = await calendar.createEvent({
@@ -184,6 +260,8 @@ export const handleMessage = async (input: unknown): Promise<Result<unknown>> =>
   const message: ExtensionMessage = parsed.data;
   try {
     switch (message.type) {
+      case "capture.preview":
+        return capture.previewCurrentTab();
       case "capture.current":
         return capture.fromCurrentTab();
       case "capture.url":
@@ -337,27 +415,12 @@ export const handleMessage = async (input: unknown): Promise<Result<unknown>> =>
         return confirmProposal(message.payload.proposalId, message.payload.conflictOverride);
       case "sessions.list":
         return sessions.list();
-      case "sessions.review": {
-        const sessionResult = await sessions.get(message.payload.sessionId);
-        if (!sessionResult.ok) return sessionResult;
-        const now = new Date().toISOString();
-        for (const itemId of sessionResult.value.itemIds) {
-          if (message.payload.completedItemIds.includes(itemId))
-            await items.update(itemId, { status: "completed", completedAt: now });
-          else if (message.payload.skippedItemIds.includes(itemId))
-            await items.update(itemId, { status: "archived", archivedAt: now });
-          else await items.update(itemId, { status: "queued" });
-        }
-        return sessions.put(
-          ReadingSessionSchema.parse({
-            ...sessionResult.value,
-            completedItemIds: message.payload.completedItemIds,
-            skippedItemIds: message.payload.skippedItemIds,
-            status: "completed",
-            updatedAt: now
-          })
+      case "sessions.review":
+        return reviewSession(
+          message.payload.sessionId,
+          message.payload.completedItemIds,
+          message.payload.skippedItemIds
         );
-      }
       case "dashboard.stats": {
         const [itemResult, sessionResult] = await Promise.all([
           items.list({ includeDeleted: true }),
@@ -434,6 +497,12 @@ export const handleMessage = async (input: unknown): Promise<Result<unknown>> =>
         );
         await chrome.storage.local.clear();
         return ok(undefined);
+      case "navigation.open": {
+        const url = new URL(chrome.runtime.getURL(message.payload.page));
+        if (message.payload.itemId) url.searchParams.set("itemId", message.payload.itemId);
+        await chrome.tabs.create({ url: url.toString() });
+        return ok(undefined);
+      }
     }
   } catch (error) {
     return err(toDomainError(error));

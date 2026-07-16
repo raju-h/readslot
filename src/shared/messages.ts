@@ -19,6 +19,7 @@ const ItemChangesSchema = z.object({
 });
 
 export const ExtensionMessageSchema = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("capture.preview"), payload: EmptyPayload }),
   z.object({ type: z.literal("capture.current"), payload: EmptyPayload }),
   z.object({
     type: z.literal("capture.url"),
@@ -86,6 +87,13 @@ export const ExtensionMessageSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("data.reset"),
     payload: z.object({ confirmation: z.literal("DELETE READSLOT DATA") })
+  }),
+  z.object({
+    type: z.literal("navigation.open"),
+    payload: z.object({
+      page: z.enum(["queue.html", "planner.html", "session.html", "options.html"]),
+      itemId: z.string().min(1).optional()
+    })
   })
 ]);
 

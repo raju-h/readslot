@@ -1,7 +1,7 @@
 # ReadSlot Project Knowledge
 
 **Purpose:** Living context for maintainers, contributors, and coding agents  
-**Last updated:** 2026-07-13  
+**Last updated:** 2026-07-17
 **Current phase:** Version 0.9.0 beta implementation; real OAuth verification and final release packaging pending
 
 ## 1. Project identity
@@ -107,7 +107,8 @@ Primary components:
 
 - **Background service worker:** message routing, storage orchestration, OAuth, Calendar API calls, proposal generation, alarms, migrations, and idempotent event creation.
 - **Content script:** safe metadata/readable-text extraction, content detection, selected-text capture, and save feedback.
-- **Popup:** quick capture, queue count, next block, connection state, and navigation.
+- **Popup:** non-persisting current-page preview, explicit save-for-later, duplicate status, Undo,
+  queue navigation, and item-scoped planner handoff.
 - **Queue page:** search, filters, sorting, editing, bulk actions, import/export, and local statistics.
 - **Planner page:** candidate review, proposal editing, conflict checks, and explicit confirmation.
 - **Session page:** item opening, timer, completion, and end-of-session review.
@@ -158,6 +159,8 @@ queued -> proposed -> scheduled -> in_progress -> completed
 
 Important rules:
 
+- Opening the toolbar popup never writes to the queue. Toolbar capture requires an explicit Save
+  for later or Save & choose time action; context-menu and keyboard capture remain immediate.
 - An item can belong to only one active confirmed session.
 - A proposal expires after 24 hours by default and must be revalidated if stale.
 - Deletion is soft first; trash retention defaults to 30 days.
@@ -207,6 +210,16 @@ Calendar event creation is the highest-risk workflow. Its application service sh
 - An idempotency key persisted before or atomically with the creation attempt
 
 The service must persist the Google event ID, calendar ID, local session ID, creation timestamp, and last-sync timestamp. Retries must reconcile an uncertain prior response before issuing another create request.
+
+Calendar lookup outcomes are intentionally distinct: `404` means the deterministic event does not
+exist, `409` means creation collided with an existing deterministic event and must be reconciled,
+and `5xx` remains a retryable outage. Never issue `events.insert` after an inconclusive initial
+lookup. A timed-out or collided insert is successful only when a follow-up lookup returns the
+expected event.
+
+Session review is a single IndexedDB transaction. Completed and skipped IDs must be disjoint and
+belong to the session; a completed session cannot be reviewed again; and missing or stale items
+must leave every item and the session unchanged.
 
 ## 12. Suggested implementation sequence
 

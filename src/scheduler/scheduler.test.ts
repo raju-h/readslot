@@ -64,6 +64,18 @@ describe("mergeBusyIntervals", () => {
 });
 
 describe("generateSuggestions", () => {
+  it("does not schedule completed items", () => {
+    const proposals = generateSuggestions({
+      items: [ReadingItemSchema.parse({ ...item, status: "completed" })],
+      busy: [],
+      settings: createDefaultSettings(),
+      calendarConnected: true,
+      now: new Date("2026-07-13T12:00:00.000Z")
+    });
+
+    expect(proposals).toHaveLength(0);
+  });
+
   it("generates three distinct, conflict-free proposals within allowed hours", () => {
     const settings = {
       ...createDefaultSettings(),

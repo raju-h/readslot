@@ -28,13 +28,6 @@ chrome.runtime.onInstalled.addListener(() => {
   void chrome.alarms.create("readslot-sync", { periodInMinutes: 30 });
 });
 
-chrome.action.onClicked.addListener((tab) => {
-  void (async () => {
-    const result = await capture.fromTab(tab);
-    if (tab.id) await capture.toast(tab.id, result);
-  })();
-});
-
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   void (async () => {
     if (info.menuItemId === MENU.open) return openPage("queue.html");

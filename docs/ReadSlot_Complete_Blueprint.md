@@ -393,16 +393,17 @@ The user can save:
 
 ## Capture entry points
 
-- Toolbar click
-- Context menu
-- Keyboard shortcut
-- Extension popup
+- Toolbar popup with explicit Save for later and Save & choose time actions
+- Context menu with immediate capture
+- Keyboard shortcut with immediate capture
 - Queue page paste input
 - Import file
 
 ## Capture outcome
 
-Show a toast:
+Show inline status in the toolbar popup, or a center-right page toast for immediate context-menu
+and keyboard captures:
+
 - Saved
 - Already saved
 - Save failed
@@ -414,6 +415,7 @@ Show a toast:
 - Capture completes in under 300 ms locally, excluding metadata enrichment.
 - Duplicate detection works with normalized URLs.
 - Saving never triggers event creation.
+- Opening the toolbar popup never saves until the user chooses an action.
 - Save works while the user is offline.
 - Metadata enrichment failure does not prevent saving.
 
@@ -1187,12 +1189,11 @@ Responsibilities:
 ### Popup
 
 Responsibilities:
-- Save current page
-- Show queue count
-- Show upcoming reading block
-- Open planner
-- Quick schedule
-- Connection status
+- Preview the current page and estimated reading time without persisting it
+- Show duplicate and current item status
+- Save for later only after an explicit action
+- Save and open item-scoped suggestions in the full planner
+- Open the queue and offer Undo for a new save
 
 ### Queue page
 

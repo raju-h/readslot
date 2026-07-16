@@ -10,3 +10,8 @@ GitHub Actions are intentionally disabled. Before every push, run both `pnpm che
 but dependency updates are accepted only after these local gates pass.
 
 Never use personal Calendar data in fixtures, screenshots, logs, or bug reports.
+
+Automated integration coverage includes Calendar `404`, `409`, `500`, timed-out-create
+reconciliation, initial lookup failure, and atomic session review rollback. These tests do not
+replace the release checklist's real-OAuth and unpacked-extension smoke tests, which remain manual
+because they depend on the configured Chrome extension identity and a dedicated Google account.

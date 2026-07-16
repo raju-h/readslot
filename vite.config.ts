@@ -11,6 +11,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         background: resolve(import.meta.dirname, "src/background/index.ts"),
+        popup: resolve(import.meta.dirname, "popup.html"),
         queue: resolve(import.meta.dirname, "queue.html"),
         planner: resolve(import.meta.dirname, "planner.html"),
         session: resolve(import.meta.dirname, "session.html"),

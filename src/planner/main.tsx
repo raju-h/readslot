@@ -1,5 +1,6 @@
 import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
+import { z } from "zod";
 import { ProposalSchema, type Proposal } from "../domain/schemas";
 import { sendMessage } from "../shared/client";
 import { EmptyState, Notice, PageShell, formatDateTime, formatMinutes } from "../shared/ui";
@@ -16,13 +17,15 @@ interface WeeklyPlan {
   description: string;
 }
 
+const ItemIdQuerySchema = z.string().trim().min(1).max(200);
+
 const toLocalInput = (iso: string) => {
   const date = new Date(iso);
   const offset = date.getTimezoneOffset() * 60_000;
   return new Date(date.getTime() - offset).toISOString().slice(0, 16);
 };
 
-const App = () => {
+export const PlannerApp = () => {
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [status, setStatus] = useState<CalendarStatus>({ configured: false, connected: false });
   const [notice, setNotice] = useState<{
@@ -33,7 +36,7 @@ const App = () => {
   const [conflictId, setConflictId] = useState<string>();
   const [weeklyPlans, setWeeklyPlans] = useState<WeeklyPlan[]>([]);
 
-  const load = async () => {
+  const load = async (): Promise<CalendarStatus | undefined> => {
     const [proposalResult, statusResult, weeklyResult] = await Promise.all([
       sendMessage<Proposal[]>({ type: "proposals.list", payload: {} }),
       sendMessage<CalendarStatus>({ type: "calendar.status", payload: {} }),
@@ -47,11 +50,8 @@ const App = () => {
       );
     if (statusResult.ok) setStatus(statusResult.value);
     if (weeklyResult.ok) setWeeklyPlans(weeklyResult.value);
+    return statusResult.ok ? statusResult.value : undefined;
   };
-
-  useEffect(() => {
-    void load();
-  }, []);
 
   const connect = async () => {
     const result = await sendMessage<{ connected: boolean }>({
@@ -64,17 +64,20 @@ const App = () => {
     } else setNotice({ tone: "danger", text: result.error.message });
   };
 
-  const generate = async () => {
+  const generate = async (itemIds?: string[], calendarConnected = status.connected) => {
     setLoading(true);
-    const result = await sendMessage<Proposal[]>({ type: "suggestions.generate", payload: {} });
+    const result = await sendMessage<Proposal[]>({
+      type: "suggestions.generate",
+      payload: { itemIds }
+    });
     setLoading(false);
     if (result.ok) {
       setProposals(result.value);
       setNotice(
         result.value.length
           ? {
-              tone: status.connected ? "success" : "warning",
-              text: status.connected
+              tone: calendarConnected ? "success" : "warning",
+              text: calendarConnected
                 ? "Found your best available reading windows."
                 : "Previewing times without Calendar availability. Connect Google before confirmation."
             }
@@ -85,6 +88,23 @@ const App = () => {
       );
     } else setNotice({ tone: "danger", text: result.error.message });
   };
+
+  useEffect(() => {
+    void (async () => {
+      const loadedStatus = await load();
+      const rawItemId = new URLSearchParams(window.location.search).get("itemId");
+      if (!rawItemId) return;
+      const parsedItemId = ItemIdQuerySchema.safeParse(rawItemId);
+      if (!parsedItemId.success) {
+        setNotice({
+          tone: "danger",
+          text: "This planner link is invalid. Open the queue and choose an item again."
+        });
+        return;
+      }
+      await generate([parsedItemId.data], loadedStatus?.connected ?? false);
+    })();
+  }, []);
 
   const saveProposal = async (proposal: Proposal) => {
     const result = await sendMessage<Proposal>({
@@ -202,7 +222,14 @@ const App = () => {
                   <p className="eyebrow">Option {index + 1}</p>
                   <h2>{formatDateTime(proposal.suggestedStart)}</h2>
                 </div>
-                <span className="pill">{proposal.confidence} confidence</span>
+                <span
+                  className={`pill confidence-badge confidence-badge-${proposal.confidence}`}
+                  aria-label={`${proposal.confidence} confidence`}
+                >
+                  <span className="confidence-badge-dot" aria-hidden="true" />
+                  {proposal.confidence.charAt(0).toUpperCase() + proposal.confidence.slice(1)}
+                  <span className="confidence-badge-label">confidence</span>
+                </span>
               </div>
               <div className="meta">
                 <strong>{formatMinutes(proposal.durationMinutes)}</strong>
@@ -291,8 +318,10 @@ const App = () => {
   );
 };
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>
-);
+const root = document.getElementById("root");
+if (root)
+  createRoot(root).render(
+    <StrictMode>
+      <PlannerApp />
+    </StrictMode>
+  );

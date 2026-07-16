@@ -5,9 +5,11 @@ message union with a non-persistent background service worker. The worker owns a
 services and calls typed adapters for IndexedDB, Chrome Identity, Google Calendar, settings,
 alarms, and notifications.
 
-The toolbar action injects `content.js` only after a user gesture. That isolated bundle uses
-Mozilla Readability locally, returns sanitized metadata, and displays the save/Undo toast.
-There is no persistent content script and no `<all_urls>` permission.
+The toolbar action opens a review popup and injects `content.js` only to preview sanitized metadata
+after that user gesture. The popup does not persist anything until the user chooses Save for later
+or Save & choose time. Context-menu and keyboard capture remain immediate and use the isolated
+content bundle for center-right save/Undo feedback. There is no persistent content script and no
+`<all_urls>` permission.
 
 Domain schemas are the runtime source of truth. UI components do not call Dexie, Chrome, or
 Google directly. Calendar proposals contain no side effects; confirmation performs a fresh

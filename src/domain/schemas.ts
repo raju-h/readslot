@@ -23,6 +23,17 @@ export const ProposalStatusSchema = z.enum([
   "expired"
 ]);
 
+export const CapturePreviewSchema = z.object({
+  title: z.string().trim().min(1).max(500),
+  canonicalUrl: z.url(),
+  domain: z.string().max(253),
+  estimatedMinutes: z.number().int().positive().max(10_080),
+  estimateConfidence: ConfidenceSchema,
+  duplicate: z.boolean(),
+  existingItemId: z.string().min(1).optional(),
+  existingItemStatus: ItemStatusSchema.optional()
+});
+
 const IsoDateSchema = z.iso.datetime({ offset: true });
 
 export const ReadingItemSchema = z.object({
@@ -145,6 +156,7 @@ export const BackupSchema = z.object({
 export type ContentType = z.infer<typeof ContentTypeSchema>;
 export type ItemStatus = z.infer<typeof ItemStatusSchema>;
 export type Priority = z.infer<typeof PrioritySchema>;
+export type CapturePreview = z.infer<typeof CapturePreviewSchema>;
 export type ReadingItem = z.infer<typeof ReadingItemSchema>;
 export type Proposal = z.infer<typeof ProposalSchema>;
 export type ReadingSession = z.infer<typeof ReadingSessionSchema>;

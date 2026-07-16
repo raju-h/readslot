@@ -28,6 +28,10 @@ The maintained development baseline is in
 specification in
 [`docs/ReadSlot_Complete_Blueprint.md`](docs/ReadSlot_Complete_Blueprint.md).
 
+Clicking the toolbar icon opens a page preview without saving it. Choose **Save for later** to add
+it to the local queue, or **Save & choose time** to continue with item-specific Calendar
+suggestions. Context-menu and keyboard captures remain immediate.
+
 ## Privacy and permissions
 
 ReadSlot has no backend, advertising, analytics, or remote executable code. See

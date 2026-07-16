@@ -34,7 +34,8 @@ const showToast = (message: string, itemId?: string) => {
   document.getElementById("readslot-toast-host")?.remove();
   const host = document.createElement("div");
   host.id = "readslot-toast-host";
-  host.style.cssText = "position:fixed;z-index:2147483647;right:20px;bottom:20px";
+  host.style.cssText =
+    "position:fixed;z-index:2147483647;right:20px;top:50%;transform:translateY(-50%)";
   const shadow = host.attachShadow({ mode: "closed" });
   const box = document.createElement("div");
   box.setAttribute("role", "status");

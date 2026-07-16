@@ -127,6 +127,16 @@ export class GoogleCalendarGateway implements CalendarGateway {
           code: "CALENDAR_READ_ONLY",
           message: "The selected calendar is not writable."
         });
+      if (response.status === 404)
+        return err({
+          code: "CALENDAR_EVENT_NOT_FOUND",
+          message: "The Google Calendar event was not found."
+        });
+      if (response.status === 409)
+        return err({
+          code: "CALENDAR_EVENT_EXISTS",
+          message: "This Google Calendar event already exists."
+        });
       if (response.status === 429)
         return err({
           code: "RATE_LIMITED",
@@ -205,7 +215,7 @@ export class GoogleCalendarGateway implements CalendarGateway {
       end?: { dateTime?: string };
     }>(`/calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(eventId)}`);
     if (!response.ok) {
-      if (response.error.code === "CALENDAR_UNAVAILABLE") return ok(undefined);
+      if (response.error.code === "CALENDAR_EVENT_NOT_FOUND") return ok(undefined);
       return response;
     }
     if (!response.value.start?.dateTime || !response.value.end?.dateTime) return ok(undefined);

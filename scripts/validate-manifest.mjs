@@ -9,6 +9,8 @@ const errors = [];
 
 if (manifest.manifest_version !== 3) errors.push("manifest_version must be 3");
 if (manifest.name !== "ReadSlot") errors.push("extension name must be ReadSlot");
+if (manifest.action?.default_popup !== "popup.html")
+  errors.push("toolbar action must open popup.html");
 if (manifest.permissions?.includes("tabs")) errors.push("broad tabs permission is forbidden");
 if (manifest.host_permissions?.includes("<all_urls>")) errors.push("<all_urls> is forbidden");
 if (manifest.content_security_policy?.extension_pages.includes("unsafe-eval"))
@@ -24,6 +26,7 @@ if (
 for (const file of [
   "background.js",
   "content.js",
+  "popup.html",
   "queue.html",
   "planner.html",
   "session.html",

@@ -41,13 +41,38 @@ const installChromeMock = async (page: Page) => {
         generatedAt: now,
         expiresAt: "2026-07-15T12:00:00.000Z"
       };
+      const secondItem = {
+        ...item,
+        id: "item-2",
+        originalUrl: "https://example.com/unfinished-reading",
+        canonicalUrl: "https://example.com/unfinished-reading",
+        title: "An unfinished reading item"
+      };
+      const session = {
+        schemaVersion: 1,
+        id: "session-1",
+        proposalId: proposal.id,
+        itemIds: [item.id, secondItem.id],
+        completedItemIds: [],
+        skippedItemIds: [],
+        calendarId: "primary",
+        calendarEventId: "event-1",
+        start: "2026-07-15T12:00:00.000Z",
+        end: "2026-07-15T12:30:00.000Z",
+        status: "scheduled",
+        createdAt: now,
+        updatedAt: now,
+        lastSyncedAt: now
+      };
+      const testState: { reviewPayload?: unknown } = {};
+      Object.defineProperty(window, "__readslotE2E", { value: testState, configurable: true });
       const successful = (value: unknown) => ({ ok: true, value });
       const chromeTarget = window.chrome ?? {};
       Object.defineProperty(chromeTarget, "runtime", {
         value: {
           getURL: (path: string) => `http://127.0.0.1:4173/${path}`,
-          sendMessage: (message: { type: string }) => {
-            if (message.type === "items.list") return successful([item]);
+          sendMessage: (message: { type: string; payload?: unknown }) => {
+            if (message.type === "items.list") return successful([item, secondItem]);
             if (message.type === "dashboard.stats")
               return successful({
                 totalItems: 1,
@@ -72,6 +97,11 @@ const installChromeMock = async (page: Page) => {
                 }
               ]);
             if (message.type === "proposals.confirm") return successful({ id: "session-1" });
+            if (message.type === "sessions.list") return successful([session]);
+            if (message.type === "sessions.review") {
+              testState.reviewPayload = message.payload;
+              return successful({ ...session, status: "completed" });
+            }
             return successful(undefined);
           }
         },
@@ -108,4 +138,102 @@ test("planner keeps event creation behind explicit confirmation", async ({ page 
   await expect(
     page.getByText("Reading block created. Your items are now scheduled.")
   ).toBeVisible();
+});
+
+test("toolbar popup previews first and saves only after an explicit action", async ({ page }) => {
+  await page.addInitScript(() => {
+    const item = {
+      schemaVersion: 1,
+      id: "popup-item",
+      originalUrl: "https://example.com/popup-article",
+      canonicalUrl: "https://example.com/popup-article",
+      title: "A useful popup article",
+      domain: "example.com",
+      contentType: "article",
+      estimatedMinutes: 15,
+      estimateConfidence: "high",
+      priority: "normal",
+      tags: [],
+      status: "queued",
+      createdAt: "2026-07-17T00:00:00.000Z",
+      updatedAt: "2026-07-17T00:00:00.000Z"
+    };
+    const state = { captures: 0 };
+    Object.defineProperty(window, "__readslotPopupTest", { value: state, configurable: true });
+    const chromeTarget = window.chrome ?? {};
+    Object.defineProperty(chromeTarget, "runtime", {
+      value: {
+        sendMessage: (message: { type: string }) => {
+          if (message.type === "capture.preview")
+            return Promise.resolve({
+              ok: true,
+              value: {
+                title: item.title,
+                canonicalUrl: item.canonicalUrl,
+                domain: item.domain,
+                estimatedMinutes: item.estimatedMinutes,
+                estimateConfidence: item.estimateConfidence,
+                duplicate: false
+              }
+            });
+          if (message.type === "capture.current") {
+            state.captures += 1;
+            return Promise.resolve({ ok: true, value: { item, duplicate: false } });
+          }
+          return Promise.resolve({ ok: true, value: undefined });
+        }
+      },
+      configurable: true
+    });
+    if (!window.chrome)
+      Object.defineProperty(window, "chrome", { value: chromeTarget, configurable: true });
+  });
+
+  await page.goto("/popup.html");
+  await expect(page.getByRole("heading", { name: "A useful popup article" })).toBeVisible();
+  expect(
+    await page.evaluate(
+      () =>
+        (window as unknown as { __readslotPopupTest: { captures: number } }).__readslotPopupTest
+          .captures
+    )
+  ).toBe(0);
+
+  await page.getByRole("button", { name: "Save for later" }).click();
+  await expect(page.getByText("Saved to ReadSlot.")).toBeVisible();
+  expect(
+    await page.evaluate(
+      () =>
+        (window as unknown as { __readslotPopupTest: { captures: number } }).__readslotPopupTest
+          .captures
+    )
+  ).toBe(1);
+});
+
+test("session review completes one item and returns an unfinished item to the queue", async ({
+  page
+}) => {
+  await installChromeMock(page);
+  await page.goto("/session.html");
+
+  await page
+    .getByLabel("Outcome for A practical guide to local-first software")
+    .selectOption("completed");
+  await page.getByRole("button", { name: "Finish review" }).click();
+
+  await expect(page.getByText(/unfinished items returned to your queue/i)).toBeVisible();
+  expect(
+    await page.evaluate(
+      () =>
+        (
+          window as unknown as {
+            __readslotE2E: { reviewPayload?: unknown };
+          }
+        ).__readslotE2E.reviewPayload
+    )
+  ).toEqual({
+    sessionId: "session-1",
+    completedItemIds: ["item-1"],
+    skippedItemIds: []
+  });
 });

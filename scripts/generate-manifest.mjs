@@ -21,6 +21,7 @@ const manifest = {
   minimum_chrome_version: "120",
   action: {
     default_title: "Save this page to ReadSlot",
+    default_popup: "popup.html",
     default_icon: {
       16: "icons/icon-16.png",
       32: "icons/icon-32.png",

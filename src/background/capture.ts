@@ -1,5 +1,11 @@
 import { estimateDuration } from "../domain/estimate";
-import { SCHEMA_VERSION, ReadingItemSchema, type ReadingItem } from "../domain/schemas";
+import {
+  CapturePreviewSchema,
+  SCHEMA_VERSION,
+  ReadingItemSchema,
+  type CapturePreview,
+  type ReadingItem
+} from "../domain/schemas";
 import { detectContentType, normalizeUrl } from "../domain/url";
 import type { ReadingRepository, SettingsRepository } from "../domain/ports";
 import { err, ok, type Result } from "../domain/result";
@@ -31,6 +37,58 @@ export class CaptureService {
   async fromCurrentTab(): Promise<Result<{ item: ReadingItem; duplicate: boolean }>> {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     return this.fromTab(tab);
+  }
+
+  async previewCurrentTab(): Promise<Result<CapturePreview>> {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab?.id || !tab.url || !/^https?:\/\//u.test(tab.url)) {
+      return err({
+        code: "UNSUPPORTED_PAGE",
+        message: "ReadSlot can save regular HTTP and HTTPS pages only."
+      });
+    }
+    try {
+      const [metadata, currentSettings] = await Promise.all([
+        this.extract(tab.id),
+        this.settings.get()
+      ]);
+      if (!currentSettings.ok) return currentSettings;
+      let normalized = normalizeUrl(metadata.canonicalUrl ?? tab.url);
+      if (currentSettings.value.privacyMode && normalized.hasSensitiveParameters) {
+        const privateUrl = new URL(normalized.canonicalUrl);
+        privateUrl.search = "";
+        normalized = normalizeUrl(privateUrl.toString());
+      }
+      const existing = await this.items.getByCanonicalUrl(normalized.canonicalUrl);
+      if (!existing.ok) return existing;
+      const contentType = detectContentType(normalized.canonicalUrl);
+      const estimate = estimateDuration({
+        contentType,
+        readingSpeedWpm: currentSettings.value.readingSpeedWpm,
+        defaultUnknownMinutes: currentSettings.value.defaultUnknownMinutes,
+        wordCount: metadata.wordCount,
+        imageCount: metadata.imageCount,
+        mediaDurationSeconds: metadata.mediaDurationSeconds
+      });
+      const parsedUrl = new URL(normalized.canonicalUrl);
+      return ok(
+        CapturePreviewSchema.parse({
+          title: (metadata.title?.trim() || tab.title?.trim() || parsedUrl.hostname).slice(0, 500),
+          canonicalUrl: normalized.canonicalUrl,
+          domain: parsedUrl.hostname,
+          estimatedMinutes: estimate.minutes,
+          estimateConfidence: estimate.confidence,
+          duplicate: Boolean(existing.value),
+          existingItemId: existing.value?.id,
+          existingItemStatus: existing.value?.status
+        })
+      );
+    } catch (error) {
+      return err({
+        code: "INVALID_INPUT",
+        message: error instanceof Error ? error.message : "This page cannot be previewed."
+      });
+    }
   }
 
   async fromTab(tab: chrome.tabs.Tab): Promise<Result<{ item: ReadingItem; duplicate: boolean }>> {
