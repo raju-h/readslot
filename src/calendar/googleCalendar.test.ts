@@ -107,12 +107,24 @@ describe("GoogleCalendarGateway", () => {
     expect(mockedChrome.identity.getAuthToken).not.toHaveBeenCalled();
   });
 
-  it("remembers disconnect and clears that choice after an interactive reconnect", async () => {
+  it("revokes Google access, remembers disconnect, and clears that choice after reconnect", async () => {
     const mockedChrome = chromeMock();
     vi.stubGlobal("chrome", mockedChrome);
+    const fetchMock = vi.fn(async () => new Response(null, { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
     const gateway = new GoogleCalendarGateway();
 
     expect((await gateway.disconnect()).ok).toBe(true);
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://oauth2.googleapis.com/revoke",
+      expect.objectContaining({
+        method: "POST",
+        body: "token=test-auth-value"
+      })
+    );
+    expect(mockedChrome.identity.removeCachedAuthToken).toHaveBeenCalledWith({
+      token: "test-auth-value"
+    });
     expect(mockedChrome.storage.local.set).toHaveBeenCalledWith({
       "readslot.googleCalendarDisconnected": true
     });
@@ -121,6 +133,27 @@ describe("GoogleCalendarGateway", () => {
     expect(mockedChrome.storage.local.remove).toHaveBeenCalledWith(
       "readslot.googleCalendarDisconnected"
     );
+  });
+
+  it("disconnects locally and reports when Google revocation fails", async () => {
+    const mockedChrome = chromeMock();
+    vi.stubGlobal("chrome", mockedChrome);
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(null, { status: 500 }))
+    );
+    const gateway = new GoogleCalendarGateway();
+
+    const result = await gateway.disconnect();
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error.code).toBe("OAUTH_REVOCATION_FAILED");
+    expect(mockedChrome.identity.removeCachedAuthToken).toHaveBeenCalledWith({
+      token: "test-auth-value"
+    });
+    expect(mockedChrome.storage.local.set).toHaveBeenCalledWith({
+      "readslot.googleCalendarDisconnected": true
+    });
   });
 
   it("sends the caller-provided deterministic event ID", async () => {

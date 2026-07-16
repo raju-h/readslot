@@ -167,7 +167,7 @@ Record one continuous, clearly narrated video using the production or reviewer b
 8. Show that a suggestion is not automatically booked.
 9. Review and explicitly confirm one event.
 10. Show the resulting event in Google Calendar.
-11. Disconnect ReadSlot and show how to revoke access from the Google Account.
+11. Use **Disconnect and revoke access**, then show the Google Account connections fallback.
 12. Show how to delete local ReadSlot data.
 
 Do not reveal private event details, tokens, credentials, or personal URLs. Use a dedicated reviewer
@@ -198,7 +198,7 @@ and test build stable while the review is active.
     6. Generate suggestions and select one candidate.
     7. Review the event details and explicitly confirm creation.
     8. Verify the event appears in the chosen Google Calendar.
-    9. Return to Settings and select "Disconnect Google".
+    9. Return to Settings and select "Disconnect and revoke access".
 
 Include reviewer-account requirements separately and send credentials only through the secure
 channel requested by Google's verification team.

@@ -18,8 +18,11 @@ Requested scopes:
 - `calendar.events`: create, reconcile, update, and detect removal of confirmed ReadSlot events.
 
 Chrome Identity manages access-token caching. ReadSlot never writes tokens to IndexedDB or
-browser settings. Production requires a separate OAuth client associated with the Chrome Web
-Store extension ID.
+browser settings. **Disconnect and revoke access** sends the current access token directly to
+Google's OAuth revocation endpoint, then removes it from Chrome's token cache. If Google cannot be
+reached, ReadSlot still disconnects locally and directs the user to Google Account connections to
+finish revocation. Production requires a separate OAuth client associated with the Chrome Web Store
+extension ID.
 
 The deployable public homepage, privacy policy, terms, support page, paste-ready scope
 justifications, verification video script, and production submission walkthrough are maintained in

@@ -186,6 +186,9 @@ Required protections:
 - Sanitize page metadata and render it as text, never trusted HTML.
 - Use a strict extension content security policy and no remote executable code.
 - Never persist or log Google access tokens manually.
+- When the user chooses **Disconnect and revoke access**, send the current token directly to
+  Google's OAuth revocation endpoint, clear Chrome's cached token, and retain only a local
+  disconnected marker.
 - Strip known tracking/authentication parameters and warn about suspicious URLs.
 - Do not include a saved URL in Calendar until the user confirms the event.
 - Diagnostics exclude tokens, calendar contents, and saved URLs by default.

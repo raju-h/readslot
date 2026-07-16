@@ -53,11 +53,15 @@ const App = () => {
     if (result.ok) {
       setNotice({
         tone: "success",
-        text: "Disconnected from Google Calendar. Saved queue items remain on this device."
+        text: "Google Calendar access revoked. Saved queue items remain on this device."
       });
       setCalendars([]);
       await load();
-    } else setNotice({ tone: "danger", text: result.error.message });
+    } else {
+      setNotice({ tone: "danger", text: result.error.message });
+      setCalendars([]);
+      await load();
+    }
   };
   const save = async (event: FormEvent) => {
     event.preventDefault();
@@ -343,8 +347,12 @@ const App = () => {
                   style={{ marginTop: 14 }}
                   onClick={() => void disconnect()}
                 >
-                  Disconnect
+                  Disconnect and revoke access
                 </button>
+                <p className="subtle">
+                  This removes ReadSlot's Google authorization. Existing Calendar events and your
+                  local queue are not deleted.
+                </p>
               </>
             ) : (
               <>

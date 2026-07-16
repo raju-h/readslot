@@ -10,4 +10,5 @@ extension. Saved URLs are sent to Google only when the user explicitly confirms 
 event whose description contains those URLs.
 
 Google access tokens are managed by Chrome Identity and are never written to ReadSlot storage.
-Users can disconnect Google, export local data, or permanently delete all local ReadSlot data.
+Users can disconnect and revoke Google access, export local data, or permanently delete all local
+ReadSlot data.

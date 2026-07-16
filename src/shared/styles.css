@@ -341,6 +341,10 @@ textarea {
   border-color: #edb8c1;
   color: #812234;
 }
+.subtle {
+  color: var(--muted);
+  font-size: 13px;
+}
 .empty-state {
   text-align: center;
   padding: 64px 20px;

@@ -51,7 +51,7 @@ const manifest = {
     "alarms",
     "notifications"
   ],
-  host_permissions: ["https://www.googleapis.com/*"],
+  host_permissions: ["https://www.googleapis.com/*", "https://oauth2.googleapis.com/*"],
   commands: {
     "capture-page": {
       suggested_key: { default: "Alt+Shift+S", mac: "MacCtrl+Shift+S" },

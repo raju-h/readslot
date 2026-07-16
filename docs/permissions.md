@@ -8,5 +8,7 @@
 - `alarms`: trigger session review, weekly planning reminders, and periodic event reconciliation.
 - `notifications`: show user-configured session and planning prompts.
 - `https://www.googleapis.com/*`: call Google Calendar directly from the extension.
+- `https://oauth2.googleapis.com/*`: revoke the user's Google authorization when they explicitly
+  choose **Disconnect and revoke access**.
 
 ReadSlot does not request `tabs`, browsing history, or `<all_urls>`.

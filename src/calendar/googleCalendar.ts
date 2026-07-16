@@ -11,6 +11,7 @@ interface TokenState {
 }
 
 const API_ROOT = "https://www.googleapis.com/calendar/v3";
+const REVOCATION_ENDPOINT = "https://oauth2.googleapis.com/revoke";
 const DISCONNECTED_KEY = "readslot.googleCalendarDisconnected";
 
 export class GoogleCalendarGateway implements CalendarGateway {
@@ -28,6 +29,33 @@ export class GoogleCalendarGateway implements CalendarGateway {
   private async clearCachedToken(token?: string): Promise<void> {
     if (token) await chrome.identity.removeCachedAuthToken({ token }).catch(() => undefined);
     this.tokenState = undefined;
+  }
+
+  private async revokeToken(token: string): Promise<Result<void>> {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12_000);
+    try {
+      const response = await fetch(REVOCATION_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ token }).toString(),
+        signal: controller.signal
+      });
+      if (response.ok) return ok(undefined);
+      return err({
+        code: "OAUTH_REVOCATION_FAILED",
+        message:
+          "ReadSlot disconnected locally, but Google access could not be revoked. Remove ReadSlot from your Google Account connections."
+      });
+    } catch {
+      return err({
+        code: "OAUTH_REVOCATION_FAILED",
+        message:
+          "ReadSlot disconnected locally, but Google could not be reached to revoke access. Try again from your Google Account connections."
+      });
+    } finally {
+      clearTimeout(timeout);
+    }
   }
 
   async connect(interactive: boolean): Promise<Result<void>> {
@@ -60,16 +88,17 @@ export class GoogleCalendarGateway implements CalendarGateway {
       .getAuthToken({ interactive: false })
       .catch(() => undefined);
     const token = this.tokenState?.token ?? cached?.token;
+    const revocation = token ? await this.revokeToken(token) : ok(undefined);
     await this.clearCachedToken(token);
     try {
       await chrome.storage.local.set({ [DISCONNECTED_KEY]: true });
-      return ok(undefined);
     } catch {
       return err({
         code: "STORAGE_ERROR",
         message: "Google access was cleared, but ReadSlot could not save the disconnected state."
       });
     }
+    return revocation;
   }
 
   private async request<T>(path: string, init?: RequestInit): Promise<Result<T>> {
