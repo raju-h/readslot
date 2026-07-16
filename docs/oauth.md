@@ -20,3 +20,7 @@ Requested scopes:
 Chrome Identity manages access-token caching. ReadSlot never writes tokens to IndexedDB or
 browser settings. Production requires a separate OAuth client associated with the Chrome Web
 Store extension ID.
+
+The deployable public homepage, privacy policy, terms, support page, paste-ready scope
+justifications, verification video script, and production submission walkthrough are maintained in
+the [OAuth verification website folder](../oauth-verification-site/README.md).

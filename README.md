@@ -34,6 +34,9 @@ ReadSlot has no backend, advertising, analytics, or remote executable code. See
 [`PRIVACY.md`](PRIVACY.md) for data handling and [`docs/permissions.md`](docs/permissions.md)
 for each requested browser permission.
 
+The host-ready OAuth verification website and complete submission tutorial are in the
+[OAuth verification website folder](oauth-verification-site/README.md).
+
 ## Attribution
 
 ReadSlot is based in product direction on [Reading Block](https://github.com/zarazhangrui/reading-block)

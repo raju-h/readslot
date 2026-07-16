@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="ReadSlot privacy policy and Google user-data disclosure." />
+    <title>Privacy Policy — ReadSlot</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="ReadSlot home">ReadSlot</a>
+      <nav aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a aria-current="page" href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="support.html">Support</a>
+      </nav>
+    </header>
+
+    <main class="document">
+      <p class="eyebrow">Effective July 17, 2026</p>
+      <h1>ReadSlot Privacy Policy</h1>
+      <p class="lead">
+        ReadSlot is a browser extension that stores your reading queue on your device and connects
+        directly to Google Calendar only when you choose to enable Calendar features.
+      </p>
+
+      <h2>Information ReadSlot handles</h2>
+      <h3>Reading data stored locally</h3>
+      <p>
+        ReadSlot stores saved URLs, page titles, notes, tags, collections, reading-time estimates,
+        scheduling preferences, session history, and extension settings in your browser. This data
+        is not uploaded to a ReadSlot server because ReadSlot does not operate a backend.
+      </p>
+
+      <h3>Google user data</h3>
+      <p>If you connect Google Calendar, ReadSlot accesses:</p>
+      <ul>
+        <li>calendar names, identifiers, and access roles so you can select calendars;</li>
+        <li>free/busy time intervals so ReadSlot can suggest available reading periods; and</li>
+        <li>
+          event information needed to create, update, reconcile, or detect deletion of ReadSlot
+          reading events that you explicitly confirm.
+        </li>
+      </ul>
+      <p>
+        ReadSlot does not use Calendar data to build advertising profiles, determine credit or
+        eligibility, or train generalized artificial-intelligence or machine-learning models.
+      </p>
+
+      <h2>How Google user data is used</h2>
+      <p>ReadSlot uses Google Calendar data only to provide these user-facing features:</p>
+      <ul>
+        <li>show calendars available for scheduling;</li>
+        <li>find open periods without retrieving event titles through the FreeBusy API;</li>
+        <li>suggest reading blocks according to your settings;</li>
+        <li>create a Calendar event only after your explicit confirmation; and</li>
+        <li>keep the corresponding local reading session consistent with that event.</li>
+      </ul>
+      <p>
+        A saved URL is included in a Google Calendar event only when you review and confirm an event
+        whose description contains that URL.
+      </p>
+
+      <h2>Storage and retention</h2>
+      <p>
+        Google access tokens are cached and managed by Chrome Identity. ReadSlot does not write
+        access tokens to IndexedDB, extension settings, logs, or a remote server. Selected calendar
+        identifiers and identifiers for confirmed ReadSlot events may be stored locally for as long
+        as the extension data remains on your device so that scheduling and reconciliation work.
+      </p>
+      <p>
+        Your reading data remains locally until you delete it, clear the extension's data, uninstall
+        the extension, or your browser removes it. Items moved to ReadSlot's trash are scheduled for
+        permanent deletion after 30 days unless you restore or permanently delete them sooner.
+      </p>
+
+      <h2>Sharing and disclosure</h2>
+      <p>
+        ReadSlot does not sell, rent, or share Google user data with advertisers, data brokers, or
+        other third parties. Calendar requests are sent directly from the extension to Google APIs.
+        Information is disclosed only when you instruct ReadSlot to create or update a Calendar
+        event, when required by applicable law, or when necessary to protect users and the service.
+      </p>
+
+      <h2>Security</h2>
+      <p>
+        ReadSlot minimizes requested permissions, uses Chrome's OAuth token management, prohibits
+        remote executable code, validates external data, and requires explicit confirmation before
+        Calendar creation. No system can guarantee absolute security, but ReadSlot is designed to
+        keep reading data on-device and reduce unnecessary access.
+      </p>
+
+      <h2>Your choices and controls</h2>
+      <ul>
+        <li>You can use the reading queue without connecting Google Calendar.</li>
+        <li>You can disconnect Google Calendar from ReadSlot settings.</li>
+        <li>You can revoke ReadSlot access from your Google Account permissions page.</li>
+        <li>You can export or permanently delete local ReadSlot data.</li>
+        <li>You can uninstall ReadSlot to remove its locally stored extension data.</li>
+      </ul>
+      <p>
+        Disconnecting ReadSlot does not automatically delete Calendar events you previously chose to
+        create. You can delete those events directly in Google Calendar.
+      </p>
+
+      <h2>Google API Services User Data Policy</h2>
+      <p>
+        ReadSlot's use and transfer of information received from Google APIs adheres to the
+        <a href="https://developers.google.com/terms/api-services-user-data-policy"
+          >Google API Services User Data Policy</a
+        >, including the Limited Use requirements.
+      </p>
+
+      <h2>Children's privacy</h2>
+      <p>
+        ReadSlot is not directed to children under 13, and ReadSlot does not knowingly collect
+        children's personal information through a ReadSlot-operated service.
+      </p>
+
+      <h2>Policy changes</h2>
+      <p>
+        Material changes will be reflected on this page with a revised effective date. If a change
+        materially affects Google user-data handling, ReadSlot will provide an appropriate notice
+        before the new practice takes effect.
+      </p>
+
+      <h2>Contact and support</h2>
+      <p>
+        For privacy questions or support, use the
+        <a href="https://github.com/raju-h/readslot/issues">ReadSlot issue tracker</a>. Do not
+        include OAuth tokens, private Calendar data, or sensitive saved URLs in a public report.
+      </p>
+    </main>
+
+    <footer>
+      <p>© 2026 ReadSlot. Schedule what you save.</p>
+      <div>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="support.html">Support</a>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="ReadSlot help, Calendar connection, and troubleshooting." />
+    <title>Support — ReadSlot</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="ReadSlot home">ReadSlot</a>
+      <nav aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a aria-current="page" href="support.html">Support</a>
+      </nav>
+    </header>
+
+    <main class="document">
+      <p class="eyebrow">Help center</p>
+      <h1>ReadSlot support</h1>
+      <p class="lead">
+        Common answers for installing, connecting, disconnecting, and deleting data.
+      </p>
+
+      <h2>Connect Google Calendar</h2>
+      <ol>
+        <li>Open ReadSlot Settings.</li>
+        <li>Review the Calendar permission explanation.</li>
+        <li>Select <strong>Connect Google</strong> and choose your account.</li>
+        <li>Review and approve the requested Calendar permissions.</li>
+        <li>Select a destination calendar and the calendars used to check availability.</li>
+      </ol>
+
+      <h2>Why does ReadSlot request Calendar access?</h2>
+      <p>
+        ReadSlot lists your calendars, checks free/busy intervals, and manages reading events you
+        explicitly confirm. It does not create an event merely because a time was suggested.
+      </p>
+
+      <h2>Disconnect or revoke access</h2>
+      <p>
+        Use <strong>Disconnect Google</strong> in ReadSlot Settings. You can also revoke access from
+        <a href="https://myaccount.google.com/connections">your Google Account connections</a>.
+        Existing Calendar events remain until you delete them in Google Calendar.
+      </p>
+
+      <h2>Delete ReadSlot data</h2>
+      <p>
+        Permanently delete local data from ReadSlot Settings, or uninstall the extension and remove
+        its site data through Chrome. Revoking Google access removes authorization but does not
+        remove local queue data or previously created events.
+      </p>
+
+      <h2>Troubleshooting</h2>
+      <dl class="faq">
+        <dt>Google says the app is not configured</dt>
+        <dd>Use a build containing an OAuth client registered for that exact extension ID.</dd>
+        <dt>Access is denied by a work or school account</dt>
+        <dd>Your Google Workspace administrator may need to allow ReadSlot's OAuth client.</dd>
+        <dt>No scheduling times appear</dt>
+        <dd>Check the selected calendars, working hours, notice period, and scheduling horizon.</dd>
+        <dt>An event was deleted in Google Calendar</dt>
+        <dd>ReadSlot will not recreate an externally deleted event without your confirmation.</dd>
+      </dl>
+
+      <div class="notice">
+        <h2>Still need help?</h2>
+        <p>
+          Open a report in the
+          <a href="https://github.com/raju-h/readslot/issues">ReadSlot issue tracker</a>. Include
+          the extension version and safe reproduction steps, but never post OAuth tokens, private
+          Calendar data, or sensitive URLs.
+        </p>
+      </div>
+    </main>
+
+    <footer>
+      <p>© 2026 ReadSlot. Schedule what you save.</p>
+      <div>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="support.html">Support</a>
+      </div>
+    </footer>
+  </body>
+</html>
