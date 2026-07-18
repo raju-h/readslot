@@ -4,6 +4,15 @@ This folder is a dependency-free static website for ReadSlot's Google OAuth veri
 be hosted on any service that serves HTML and CSS. The pages use relative links, no cookies, no
 analytics, no remote fonts, and no backend.
 
+ReadSlot's public repository now lives in the Archiom organization:
+[`https://github.com/archiom-io/readslot`](https://github.com/archiom-io/readslot).
+The deployment URLs used for OAuth review and Chrome Web Store support are:
+
+- Homepage: `https://archiom.io/apps/readslot`
+- Privacy policy: `https://archiom.io/apps/readslot/privacy`
+- Terms of service: `https://archiom.io/apps/readslot/terms`
+- Support: `https://archiom.io/apps/readslot/support`
+
 ## Included pages
 
 - **index.html**: public product homepage and Google Calendar access explanation
@@ -14,9 +23,10 @@ analytics, no remote fonts, and no backend.
 
 ## Before publishing
 
-1. Choose a stable HTTPS domain you control, such as **https://readslot.example**.
-2. Review every page and replace the support route if GitHub Issues is not the desired contact
-   method. Google must be able to contact the project owner privately during verification.
+1. Confirm that the stable HTTPS deployment is the Archiom-hosted site, or a domain with the
+   same published content and paths as the URLs above.
+2. Review every page and replace the support route only if GitHub Issues is not the desired
+   contact method. Google must be able to contact the project owner privately during verification.
 3. Confirm that the privacy policy exactly describes the released extension's behavior.
 4. Confirm that the product name is **ReadSlot** everywhere: website, consent screen, extension,
    Chrome Web Store listing, and verification submission.
@@ -45,12 +55,10 @@ Vercel static hosting, or an ordinary web server.
 
 After deployment, record these final URLs:
 
-    Application homepage: https://YOUR_DOMAIN/
-    Privacy policy:       https://YOUR_DOMAIN/privacy.html
-    Terms of service:     https://YOUR_DOMAIN/terms.html
-    Support:              https://YOUR_DOMAIN/support.html
-
-Do not submit **YOUR_DOMAIN**; replace it with the real HTTPS domain.
+    Application homepage: https://archiom.io/apps/readslot
+    Privacy policy:       https://archiom.io/apps/readslot/privacy
+    Terms of service:     https://archiom.io/apps/readslot/terms
+    Support:              https://archiom.io/apps/readslot/support
 
 ## Google OAuth verification: step by step
 
@@ -91,9 +99,9 @@ In Google Auth Platform → Branding, enter:
 - App name: **ReadSlot**
 - User support email: a monitored address
 - App logo: the final ReadSlot icon
-- Application homepage: the deployed homepage URL
-- Privacy policy: the deployed **privacy.html** URL
-- Terms of service: the deployed **terms.html** URL
+- Application homepage: `https://archiom.io/apps/readslot`
+- Privacy policy: `https://archiom.io/apps/readslot/privacy`
+- Terms of service: `https://archiom.io/apps/readslot/terms`
 - Authorized domain: the verified root domain
 - Developer contact information: a monitored address
 

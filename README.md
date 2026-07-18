@@ -4,6 +4,11 @@
 
 Save useful content, find realistic time, and confirm reading blocks in Google Calendar.
 
+ReadSlot is maintained in the Archiom GitHub organization:
+[`archiom-io/readslot`](https://github.com/archiom-io/readslot).
+The public verification site and Chrome Web Store support pages live on Archiom's domain:
+[`https://archiom.io/apps/readslot`](https://archiom.io/apps/readslot).
+
 ReadSlot is a free, privacy-focused Manifest V3 extension. Saved links, notes, estimates, and
 reading history stay in the browser. ReadSlot reads Calendar availability only after the user
 connects Google, and it never creates an event without explicit confirmation.
@@ -44,7 +49,12 @@ ReadSlot has no backend, advertising, analytics, or remote executable code. See
 for each requested browser permission.
 
 The host-ready OAuth verification website and complete submission tutorial are in the
-[OAuth verification website folder](oauth-verification-site/README.md).
+[OAuth verification website folder](oauth-verification-site/README.md). The deployed URLs are:
+
+- Homepage: `https://archiom.io/apps/readslot`
+- Privacy policy: `https://archiom.io/apps/readslot/privacy`
+- Terms of use: `https://archiom.io/apps/readslot/terms`
+- Support: `https://archiom.io/apps/readslot/support`
 
 ## Attribution
 

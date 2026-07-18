@@ -41,5 +41,10 @@ automatic booking. Google Calendar access is optional and can be disconnected an
   4. store-assets/screenshots/session-review.png
   5. store-assets/screenshots/settings.png
 
-Use the repository URL for homepage and support. Permission explanations are maintained in
-docs/permissions.md.
+Use the Archiom-hosted pages for store links:
+
+- Homepage: `https://archiom.io/apps/readslot`
+- Support: `https://archiom.io/apps/readslot/support`
+
+Repository issues live at `https://github.com/archiom-io/readslot/issues`. Permission
+explanations are maintained in `docs/permissions.md`.
