@@ -15,6 +15,8 @@ const App = () => {
   const [settings, setSettings] = useState<Settings>();
   const [calendars, setCalendars] = useState<CalendarSummary[]>([]);
   const [calendarsLoaded, setCalendarsLoaded] = useState(false);
+  const [calendarListStatus, setCalendarListStatus] = useState<"idle" | "loading" | "loaded" | "error">("idle");
+  const [calendarListError, setCalendarListError] = useState<string>();
   const [calendarStatus, setCalendarStatus] = useState<CalendarStatus>({
     configured: false,
     connected: false
@@ -34,9 +36,12 @@ const App = () => {
     : false;
   const selectedCalendarLabel =
     selectedCalendar?.summary ?? (selectedCalendarId === "primary" ? "Primary calendar" : "Selected calendar");
+  const writableCalendars = calendars.filter((calendar) => isWritableCalendar(calendar.accessRole));
 
   const load = async () => {
     setCalendarsLoaded(false);
+    setCalendarListStatus("loading");
+    setCalendarListError(undefined);
     const [settingsResult, statusResult] = await Promise.all([
       sendMessage<Settings>({ type: "settings.get", payload: {} }),
       sendMessage<CalendarStatus>({ type: "calendar.status", payload: {} })
@@ -49,11 +54,22 @@ const App = () => {
           type: "calendar.list",
           payload: {}
         });
-        if (calendarResult.ok) setCalendars(calendarResult.value);
+        if (calendarResult.ok) {
+          setCalendars(calendarResult.value);
+          setCalendarListStatus("loaded");
+        } else {
+          setCalendars([]);
+          setCalendarListStatus("error");
+          setCalendarListError(calendarResult.error.message);
+        }
         setCalendarsLoaded(true);
       }
     }
-    if (!statusResult.ok || !statusResult.value.connected) setCalendarsLoaded(true);
+    if (!statusResult.ok || !statusResult.value.connected) {
+      setCalendars([]);
+      setCalendarListStatus("idle");
+      setCalendarsLoaded(true);
+    }
   };
   useEffect(() => {
     void load();
@@ -389,6 +405,62 @@ const App = () => {
                   This removes ReadSlot's Google authorization. Existing Calendar events and your
                   local queue are not deleted.
                 </p>
+                <section className="panel" style={{ marginTop: 16 }}>
+                  <h3 style={{ marginTop: 0 }}>Temporary debug</h3>
+                  <p className="subtle">
+                    Remove this panel once we know whether the issue is a stale calendar, a
+                    read-only calendar, or a calendar-list failure.
+                  </p>
+                  <div className="form-grid">
+                    <p>
+                      <strong>List status:</strong> {calendarListStatus}
+                    </p>
+                    <p>
+                      <strong>Connected account:</strong> {calendarStatus.connected ? "yes" : "no"}
+                    </p>
+                    <p>
+                      <strong>Selected destination:</strong> {selectedCalendarId}
+                    </p>
+                    <p>
+                      <strong>Resolved destination:</strong>{" "}
+                      {selectedCalendar
+                        ? `${selectedCalendar.summary} (${selectedCalendar.accessRole})`
+                        : "none"}
+                    </p>
+                    <p>
+                      <strong>Writable calendars returned:</strong>{" "}
+                      {writableCalendars.length
+                        ? writableCalendars.map((calendar) => calendar.summary).join(", ")
+                        : "none"}
+                    </p>
+                    <p>
+                      <strong>Calendar count:</strong> {calendars.length}
+                    </p>
+                  </div>
+                  {calendarListError && (
+                    <Notice tone="danger" style={{ marginTop: 12 }}>
+                      Calendar list error: {calendarListError}
+                    </Notice>
+                  )}
+                  <details style={{ marginTop: 12 }}>
+                    <summary>Returned calendars</summary>
+                    {calendars.length ? (
+                      <ul className="stack" style={{ marginTop: 12 }}>
+                        {calendars.map((calendar) => (
+                          <li key={calendar.id}>
+                            <strong>{calendar.summary}</strong> — {calendar.id} —{" "}
+                            {calendar.accessRole}
+                            {calendar.primary ? " — primary" : ""}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="subtle" style={{ marginTop: 12 }}>
+                        No calendars loaded.
+                      </p>
+                    )}
+                  </details>
+                </section>
               </>
             ) : (
               <>
