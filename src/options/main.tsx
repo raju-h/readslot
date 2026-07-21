@@ -1,5 +1,6 @@
 import { StrictMode, useEffect, useState, type FormEvent } from "react";
 import { createRoot } from "react-dom/client";
+import { isWritableCalendar } from "../domain/calendar";
 import { SettingsSchema, type Settings } from "../domain/schemas";
 import type { CalendarSummary } from "../domain/ports";
 import { sendMessage } from "../shared/client";
@@ -13,14 +14,27 @@ interface CalendarStatus {
 const App = () => {
   const [settings, setSettings] = useState<Settings>();
   const [calendars, setCalendars] = useState<CalendarSummary[]>([]);
+  const [calendarsLoaded, setCalendarsLoaded] = useState(false);
   const [calendarStatus, setCalendarStatus] = useState<CalendarStatus>({
     configured: false,
     connected: false
   });
   const [notice, setNotice] = useState<{ tone: "success" | "danger" | "info"; text: string }>();
   const [confirmation, setConfirmation] = useState("");
+  const selectedCalendarId = settings?.destinationCalendarId ?? "primary";
+  const selectedCalendar =
+    calendarsLoaded && calendarStatus.connected
+      ? calendars.find((calendar) => calendar.id === selectedCalendarId) ??
+        (selectedCalendarId === "primary"
+          ? calendars.find((calendar) => calendar.primary)
+          : undefined)
+      : undefined;
+  const selectedCalendarWritable = selectedCalendar
+    ? isWritableCalendar(selectedCalendar.accessRole)
+    : false;
 
   const load = async () => {
+    setCalendarsLoaded(false);
     const [settingsResult, statusResult] = await Promise.all([
       sendMessage<Settings>({ type: "settings.get", payload: {} }),
       sendMessage<CalendarStatus>({ type: "calendar.status", payload: {} })
@@ -34,8 +48,10 @@ const App = () => {
           payload: {}
         });
         if (calendarResult.ok) setCalendars(calendarResult.value);
+        setCalendarsLoaded(true);
       }
     }
+    if (!statusResult.ok || !statusResult.value.connected) setCalendarsLoaded(true);
   };
   useEffect(() => {
     void load();
@@ -325,7 +341,7 @@ const App = () => {
                 <label>
                   Destination calendar
                   <select
-                    value={settings.destinationCalendarId ?? "primary"}
+                    value={selectedCalendarId}
                     onChange={(event) =>
                       setSettings({ ...settings, destinationCalendarId: event.target.value })
                     }
@@ -335,13 +351,28 @@ const App = () => {
                       <option
                         key={calendar.id}
                         value={calendar.id}
-                        disabled={!["writer", "owner"].includes(calendar.accessRole)}
+                        disabled={!isWritableCalendar(calendar.accessRole)}
                       >
                         {calendar.summary}
                       </option>
                     ))}
                   </select>
                 </label>
+                {calendarsLoaded && (
+                  <>
+                    <p className="subtle" aria-live="polite" style={{ marginTop: 8 }}>
+                      {selectedCalendar
+                        ? `Selected access role: ${selectedCalendar.accessRole}.`
+                        : "The saved destination calendar is not currently in the connected account."}
+                    </p>
+                    {!selectedCalendarWritable && (
+                      <Notice tone="warning">
+                        Choose a calendar where you have writer or owner access before creating an
+                        event.
+                      </Notice>
+                    )}
+                  </>
+                )}
                 <button
                   className="button button-secondary"
                   style={{ marginTop: 14 }}

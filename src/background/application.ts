@@ -26,6 +26,7 @@ import { database } from "../storage/database";
 import { normalizeUrl } from "../domain/url";
 import { parseImportedUrls } from "../domain/import";
 import { canTransitionItem } from "../domain/transitions";
+import { isWritableCalendar } from "../domain/calendar";
 
 const items = new DexieReadingRepository();
 const proposals = new DexieProposalRepository();
@@ -166,6 +167,22 @@ const confirmProposal = async (
       settingsResult.value.timezone
     );
     if (!busy.ok) return busy;
+    const calendars = await calendar.listCalendars();
+    if (!calendars.ok) return calendars;
+    const destinationCalendar =
+      calendars.value.find((calendarSummary) => calendarSummary.id === proposal.calendarId) ??
+      (proposal.calendarId === "primary"
+        ? calendars.value.find((calendarSummary) => calendarSummary.primary)
+        : undefined);
+    if (!destinationCalendar || !isWritableCalendar(destinationCalendar.accessRole)) {
+      return err({
+        code: "CALENDAR_READ_ONLY",
+        message:
+          destinationCalendar?.summary
+            ? `The selected calendar (${destinationCalendar.summary}) is not writable. Open Settings and choose a calendar where you have writer or owner access.`
+            : "The selected calendar is not writable or is no longer available. Open Settings and choose a calendar where you have writer or owner access."
+      });
+    }
     if (overlap(proposal, busy.value) && !conflictOverride) {
       return err({
         code: "CONFLICT",

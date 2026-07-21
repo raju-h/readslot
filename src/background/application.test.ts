@@ -127,6 +127,16 @@ beforeEach(async () => {
     runtime: { getManifest: vi.fn(() => ({ version: "0.9.0" })) }
   });
   calendarMocks.getBusy.mockResolvedValue(ok([]));
+  calendarMocks.listCalendars.mockResolvedValue(
+    ok([
+      {
+        id: "primary",
+        summary: "Primary calendar",
+        primary: true,
+        accessRole: "writer"
+      }
+    ])
+  );
 });
 
 afterAll(async () => {
@@ -192,6 +202,32 @@ describe("proposal confirmation recovery", () => {
     expect(result.ok).toBe(true);
     expect(calendarMocks.createEvent).toHaveBeenCalledTimes(1);
     expect(await database.sessions.count()).toBe(1);
+  });
+
+  it("rejects a destination calendar that is not writable before creating an event", async () => {
+    calendarMocks.listCalendars.mockResolvedValueOnce(
+      ok([
+        {
+          id: "primary",
+          summary: "Primary calendar",
+          primary: true,
+          accessRole: "reader"
+        }
+      ])
+    );
+
+    const result = await handleMessage({
+      type: "proposals.confirm",
+      payload: { proposalId: "proposal-one" }
+    });
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error.code).toBe("CALENDAR_READ_ONLY");
+      expect(result.error.message).toContain("writer or owner access");
+    }
+    expect(calendarMocks.createEvent).not.toHaveBeenCalled();
+    expect(await database.calendarOperations.get("proposal-one")).toBeUndefined();
   });
 });
 
